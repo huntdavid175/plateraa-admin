@@ -446,11 +446,11 @@ function CustomerProfileModal({ customer, onClose }: { customer: Customer; onClo
                     <p className="text-xs text-[var(--muted-foreground)]">Total Orders</p>
                   </div>
                   <div className="bg-[var(--muted)] rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-[var(--foreground)]">${customer.totalSpent}</p>
+                    <p className="text-2xl font-bold text-[var(--foreground)]">₵${customer.totalSpent}</p>
                     <p className="text-xs text-[var(--muted-foreground)]">Total Spent</p>
                   </div>
                   <div className="bg-[var(--muted)] rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-[var(--foreground)]">${customer.avgOrder.toFixed(0)}</p>
+                    <p className="text-2xl font-bold text-[var(--foreground)]">₵${customer.avgOrder.toFixed(0)}</p>
                     <p className="text-xs text-[var(--muted-foreground)]">Avg Order</p>
                   </div>
                 </div>
@@ -553,7 +553,7 @@ function CustomerProfileModal({ customer, onClose }: { customer: Customer; onClo
                     <p className="text-xs text-[var(--muted-foreground)]">{order.date}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-[var(--foreground)]">${order.amount.toFixed(2)}</p>
+                    <p className="text-sm font-medium text-[var(--foreground)]">₵${order.amount.toFixed(2)}</p>
                     <p className={`text-xs ${order.status === "Delivered" ? "text-emerald-600" : "text-blue-600"}`}>
                       {order.status === "Delivered" ? "✅" : "🔄"} {order.status}
                     </p>
@@ -685,7 +685,7 @@ export default function CustomersPage() {
         </div>
         <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
           <p className="text-sm text-[var(--muted-foreground)]">Avg Lifetime Value</p>
-          <p className="text-2xl font-bold text-[var(--foreground)]">${stats.avgLifetimeValue}</p>
+          <p className="text-2xl font-bold text-[var(--foreground)]">₵${stats.avgLifetimeValue}</p>
           <p className="text-xs text-emerald-600 mt-1">+8% ↑</p>
         </div>
       </div>
@@ -869,8 +869,8 @@ export default function CustomersPage() {
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">{customer.orders}</td>
                       <td className="px-4 py-3">
-                        <p className="text-sm font-medium text-[var(--foreground)]">${customer.totalSpent.toFixed(2)}</p>
-                        <p className="text-xs text-[var(--muted-foreground)]">${customer.avgOrder.toFixed(0)}/avg</p>
+                        <p className="text-sm font-medium text-[var(--foreground)]">₵${customer.totalSpent.toFixed(2)}</p>
+                        <p className="text-xs text-[var(--muted-foreground)]">₵${customer.avgOrder.toFixed(0)}/avg</p>
                       </td>
                       <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">{customer.lastOrder}</td>
                       <td className="px-4 py-3 relative">
@@ -939,7 +939,7 @@ export default function CustomersPage() {
                   <SegmentBadge segment={customer.segment} />
                 </div>
                 <div className="text-sm text-[var(--muted-foreground)] mb-3">
-                  {customer.orders} orders • ${customer.totalSpent.toFixed(2)} spent
+                  {customer.orders} orders • ₵${customer.totalSpent.toFixed(2)} spent
                 </div>
                 <div className="text-xs text-[var(--muted-foreground)] mb-4">
                   Last order: {customer.lastOrder}

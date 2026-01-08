@@ -353,23 +353,23 @@ function OrderDetailsModal({ order, onClose }: { order: Order; onClose: () => vo
               {order.items.map((item, i) => (
                 <div key={i} className="flex justify-between text-sm">
                   <span className="text-[var(--foreground)]">{item.qty}x {item.name}</span>
-                  <span className="text-[var(--muted-foreground)]">${item.price.toFixed(2)}</span>
+                  <span className="text-[var(--muted-foreground)]">₵${item.price.toFixed(2)}</span>
                 </div>
               ))}
               <div className="border-t border-[var(--border)] pt-2 mt-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--muted-foreground)]">Subtotal</span>
-                  <span className="text-[var(--foreground)]">${order.subtotal.toFixed(2)}</span>
+                  <span className="text-[var(--foreground)]">₵${order.subtotal.toFixed(2)}</span>
                 </div>
                 {order.delivery > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--muted-foreground)]">Delivery</span>
-                    <span className="text-[var(--foreground)]">${order.delivery.toFixed(2)}</span>
+                    <span className="text-[var(--foreground)]">₵${order.delivery.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-bold mt-1">
                   <span className="text-[var(--foreground)]">Total</span>
-                  <span className="text-[var(--foreground)]">${order.amount.toFixed(2)}</span>
+                  <span className="text-[var(--foreground)]">₵${order.amount.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -695,11 +695,11 @@ export default function OrdersPage() {
         </span>
         <span className="text-[var(--muted-foreground)]">|</span>
         <span className="text-[var(--foreground)]">
-          Total: <strong>${stats.totalAmount.toFixed(2)}</strong>
+          Total: <strong>₵${stats.totalAmount.toFixed(2)}</strong>
         </span>
         <span className="text-[var(--muted-foreground)]">|</span>
         <span className="text-[var(--foreground)]">
-          Avg: <strong>${stats.avgAmount.toFixed(2)}</strong>
+          Avg: <strong>₵${stats.avgAmount.toFixed(2)}</strong>
         </span>
         <span className="text-[var(--muted-foreground)]">|</span>
         <span className="text-red-600">Pending: {stats.pending}</span>
@@ -806,7 +806,7 @@ export default function OrdersPage() {
                           {channelIcons[order.channel]?.icon} {order.channel}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">${order.amount.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">₵${order.amount.toFixed(2)}</td>
                       <td className="px-4 py-3">
                         <StatusBadge status={order.status} timeAgo={order.timeAgo} />
                       </td>
@@ -881,7 +881,7 @@ export default function OrdersPage() {
                 <p className="text-xs text-[var(--muted-foreground)] mb-3">{order.time} • {order.timeAgo}</p>
                 <p className="text-sm font-medium text-[var(--foreground)] mb-1">{order.customer}</p>
                 <p className="text-sm text-[var(--muted-foreground)] mb-3">
-                  {channelIcons[order.channel]?.icon} {order.channel} • <span className="font-medium text-[var(--foreground)]">${order.amount.toFixed(2)}</span>
+                  {channelIcons[order.channel]?.icon} {order.channel} • <span className="font-medium text-[var(--foreground)]">₵${order.amount.toFixed(2)}</span>
                 </p>
                 <p className="text-xs text-[var(--muted-foreground)] mb-4 line-clamp-1">
                   {order.items.map((i) => `${i.qty}x ${i.name}`).join(", ")}

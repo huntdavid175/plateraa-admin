@@ -42,6 +42,15 @@ const navigation = [
     ),
   },
   {
+    name: "Financials",
+    href: "/dashboard/financials",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-2.954-.879-4.06 0-1.106.88-1.106 2.304 0 3.182l.879.659zm0 0L15 12m-3 0a3 3 0 103.182 3.182" />
+      </svg>
+    ),
+  },
+  {
     name: "Reports",
     href: "/dashboard/reports",
     icon: (

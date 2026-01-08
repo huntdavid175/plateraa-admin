@@ -386,7 +386,7 @@ function PaymentSettings() {
           <div className="flex items-center gap-4">
             <Toggle label="Require minimum order" checked />
             <div className="flex items-center gap-2">
-              <span className="text-sm">₦</span>
+              <span className="text-sm">₵</span>
               <input type="number" defaultValue={1000} className="w-24 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
             </div>
           </div>
@@ -420,19 +420,19 @@ function DeliverySettings() {
             <div className="grid grid-cols-3 gap-4 pl-7">
               <FormField label="Base Fee">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">₦</span>
+                  <span className="text-sm">₵</span>
                   <Input value="500" type="number" />
                 </div>
               </FormField>
               <FormField label="Per km">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">₦</span>
+                  <span className="text-sm">₵</span>
                   <Input value="100" type="number" />
                 </div>
               </FormField>
               <FormField label="Free delivery over">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">₦</span>
+                  <span className="text-sm">₵</span>
                   <Input value="5000" type="number" />
                 </div>
               </FormField>
@@ -469,7 +469,7 @@ function DeliverySettings() {
               <div>
                 <p className="font-medium text-[var(--foreground)]">{zone.name}</p>
                 <p className="text-xs text-[var(--muted-foreground)]">
-                  {zone.radius} • ₦{zone.fee} • {zone.time}
+                  {zone.radius} • ₵{zone.fee} • {zone.time}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -1215,11 +1215,11 @@ function MenuManagement() {
 // Loyalty & Rewards Settings Section (MVP Version)
 function LoyaltyRewardsSettings() {
   const topMembers = [
-    { rank: 1, name: "Sarah Mike", tier: "Gold", points: 2450, orders: 28, lifetime: "₦124,000" },
-    { rank: 2, name: "John Doe", tier: "Gold", points: 1890, orders: 22, lifetime: "₦98,000" },
-    { rank: 3, name: "Mike Jones", tier: "Silver", points: 1234, orders: 15, lifetime: "₦68,500" },
-    { rank: 4, name: "Alice Brown", tier: "Silver", points: 890, orders: 12, lifetime: "₦52,000" },
-    { rank: 5, name: "David King", tier: "Bronze", points: 567, orders: 8, lifetime: "₦35,000" },
+    { rank: 1, name: "Sarah Mike", tier: "Gold", points: 2450, orders: 28, lifetime: "₵124,000" },
+    { rank: 2, name: "John Doe", tier: "Gold", points: 1890, orders: 22, lifetime: "₵98,000" },
+    { rank: 3, name: "Mike Jones", tier: "Silver", points: 1234, orders: 15, lifetime: "₵68,500" },
+    { rank: 4, name: "Alice Brown", tier: "Silver", points: 890, orders: 12, lifetime: "₵52,000" },
+    { rank: 5, name: "David King", tier: "Bronze", points: 567, orders: 8, lifetime: "₵35,000" },
   ];
 
   return (
@@ -1255,11 +1255,11 @@ function LoyaltyRewardsSettings() {
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm">Customers earn</span>
               <input type="number" defaultValue={1} className="w-16 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm text-center" />
-              <span className="text-sm">point for every ₦</span>
+              <span className="text-sm">point for every ₵</span>
               <input type="number" defaultValue={100} className="w-24 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm text-center" />
               <span className="text-sm">spent</span>
             </div>
-            <p className="text-xs text-[var(--muted-foreground)]">Example: ₦5,000 order = 50 points</p>
+            <p className="text-xs text-[var(--muted-foreground)]">Example: ₵5,000 order = 50 points</p>
           </div>
 
           {/* Redemption */}
@@ -1267,11 +1267,11 @@ function LoyaltyRewardsSettings() {
             <label className="text-sm font-medium text-[var(--foreground)]">Redemption Value</label>
             <div className="flex items-center gap-2 flex-wrap">
               <input type="number" defaultValue={100} className="w-20 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm text-center" />
-              <span className="text-sm">points = ₦</span>
+              <span className="text-sm">points = ₵</span>
               <input type="number" defaultValue={100} className="w-24 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm text-center" />
               <span className="text-sm">discount</span>
             </div>
-            <p className="text-xs text-[var(--muted-foreground)]">Example: Customer with 500 points can get ₦500 off</p>
+            <p className="text-xs text-[var(--muted-foreground)]">Example: Customer with 500 points can get ₵500 off</p>
           </div>
 
           {/* Minimum to Redeem */}
@@ -1285,7 +1285,7 @@ function LoyaltyRewardsSettings() {
               </FormField>
               <FormField label="Minimum Order to Use Points" hint="Order must be at least this amount">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">₦</span>
+                  <span className="text-sm">₵</span>
                   <input type="number" defaultValue={2000} className="w-24 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
                 </div>
               </FormField>

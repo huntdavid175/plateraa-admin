@@ -1,6 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Bar, BarChart, XAxis, Cell, Pie, PieChart, LabelList } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 // Mock data for the dashboard
 const mockData = {
@@ -198,7 +205,109 @@ function AlertItem({ type, message }: { type: string; message: string }) {
 
 export default function DashboardPage() {
   const [currentTime] = useState(new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }));
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [revenueActiveIndex, setRevenueActiveIndex] = useState<number | null>(null);
   const maxOrders = Math.max(...mockData.peakHours.map(h => h.orders));
+
+  // Chart configs for pie charts
+  const revenueByChannelConfig = {
+    revenue: { label: "Revenue" },
+    phone: { label: "Phone orders", color: "var(--chart-1)" },
+    website: { label: "Website", color: "var(--chart-2)" },
+    social: { label: "Social media", color: "var(--chart-3)" },
+    bolt: { label: "Bolt Food", color: "var(--chart-4)" },
+    chowdeck: { label: "Chowdeck", color: "var(--chart-5)" },
+  } satisfies ChartConfig;
+
+  const revenueByPaymentConfig = {
+    revenue: { label: "Revenue" },
+    mobile: { label: "Mobile Money", color: "var(--chart-1)" },
+    card: { label: "Card", color: "var(--chart-2)" },
+    cash: { label: "Cash", color: "var(--chart-3)" },
+  } satisfies ChartConfig;
+
+  const orderStatusConfig = {
+    orders: { label: "Orders" },
+    pending: { label: "Pending Payment", color: "hsl(45, 93%, 47%)" },
+    paid: { label: "Paid", color: "hsl(217, 91%, 60%)" },
+    preparing: { label: "Preparing", color: "hsl(262, 83%, 58%)" },
+    ready: { label: "Ready", color: "hsl(188, 94%, 43%)" },
+    delivery: { label: "Out for delivery", color: "hsl(239, 84%, 67%)" },
+    completed: { label: "Completed", color: "hsl(142, 76%, 36%)" },
+  } satisfies ChartConfig;
+
+  // Transform data for pie charts
+  const revenueByChannelData = mockData.revenueByChannel.map((channel, i) => {
+    const keys = ["phone", "website", "social", "bolt", "chowdeck"];
+    return {
+      name: channel.name,
+      value: channel.amount,
+      fill: `var(--color-${keys[i]})`,
+    };
+  });
+
+  const totalPaymentRevenue = mockData.revenueByPayment.reduce((sum, p) => sum + p.amount, 0);
+  const revenueByPaymentData = mockData.revenueByPayment.map((payment, i) => {
+    const keys = ["mobile", "card", "cash"];
+    return {
+      name: payment.method,
+      value: payment.amount,
+      fill: `var(--color-${keys[i]})`,
+      percentage: ((payment.amount / totalPaymentRevenue) * 100).toFixed(1),
+    };
+  });
+
+  const orderStatusData = mockData.orderStatus.map((status, i) => {
+    const colors = [
+      "hsl(45, 93%, 47%)",      // amber-500 for pending
+      "hsl(217, 91%, 60%)",     // blue-500 for paid
+      "hsl(262, 83%, 58%)",     // purple-500 for preparing
+      "hsl(188, 94%, 43%)",     // cyan-500 for ready
+      "hsl(239, 84%, 67%)",     // indigo-500 for delivery
+      "hsl(142, 76%, 36%)",     // emerald-500 for completed
+    ];
+    return {
+      name: status.status,
+      value: status.count,
+      fill: colors[i],
+    };
+  });
+
+  // Transform peakHours data for the chart
+  const chartData = mockData.peakHours.map(h => ({
+    hour: h.hour,
+    orders: h.orders,
+  }));
+
+  const chartConfig = {
+    orders: {
+      label: "Orders",
+      color: "var(--primary)",
+    },
+  } satisfies ChartConfig;
+
+  const activeData = useMemo(() => {
+    if (activeIndex === null) return null;
+    return chartData[activeIndex];
+  }, [activeIndex]);
+
+  // Revenue overview bar chart data and config
+  const revenueChartData = dailyRevenue.map(d => ({
+    day: d.day,
+    revenue: d.amount,
+  }));
+
+  const revenueChartConfig = {
+    revenue: {
+      label: "Revenue",
+      color: "var(--primary)",
+    },
+  } satisfies ChartConfig;
+
+  const revenueActiveData = useMemo(() => {
+    if (revenueActiveIndex === null) return null;
+    return revenueChartData[revenueActiveIndex];
+  }, [revenueActiveIndex]);
 
   return (
     <div className="p-6 space-y-6">
@@ -222,7 +331,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
             title="Today's Revenue"
-            value={`$${mockData.todayRevenue.toLocaleString()}`}
+            value={`₵${mockData.todayRevenue.toLocaleString()}`}
             change={mockData.vsYesterday}
             changeType="positive"
             subtitle="Live updating"
@@ -244,7 +353,7 @@ export default function DashboardPage() {
           />
           <MetricCard
             title="Average Order Value"
-            value={`$${mockData.avgOrderValue.toFixed(2)}`}
+            value={`₵${mockData.avgOrderValue.toFixed(2)}`}
             change={5.2}
             changeType="positive"
             icon={
@@ -315,50 +424,131 @@ export default function DashboardPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-[var(--foreground)]">This Week</span>
-                <span className="font-semibold text-[var(--foreground)]">${mockData.thisWeekRevenue.toLocaleString()}</span>
+                <span className="font-semibold text-[var(--foreground)]">₵${mockData.thisWeekRevenue.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-[var(--foreground)]">This Month</span>
-                <span className="font-semibold text-[var(--foreground)]">${mockData.thisMonthRevenue.toLocaleString()}</span>
+                <span className="font-semibold text-[var(--foreground)]">₵${mockData.thisMonthRevenue.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-[var(--foreground)]">Last 30 Days</span>
-                <span className="font-semibold text-[var(--foreground)]">${mockData.last30DaysRevenue.toLocaleString()}</span>
+                <span className="font-semibold text-[var(--foreground)]">₵${mockData.last30DaysRevenue.toLocaleString()}</span>
               </div>
             </div>
-            {/* Simple chart */}
+            {/* Daily Revenue Chart */}
             <div className="mt-6">
-              <p className="text-xs text-[var(--muted-foreground)] mb-3">Daily Revenue (Last 7 Days)</p>
-              <div className="flex items-end justify-between h-24 gap-1">
-                {dailyRevenue.map((day, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div
-                      className="w-full bg-[var(--primary)] rounded-t-sm transition-all hover:bg-[var(--primary-hover)]"
-                      style={{ height: `${(day.amount / 15000) * 100}%` }}
-                    />
-                    <span className="text-[10px] text-[var(--muted-foreground)]">{day.day}</span>
-                  </div>
-                ))}
+              <div className="mb-4">
+                <p className="text-xs text-[var(--muted-foreground)]">Daily Revenue (Last 7 Days)</p>
+                {revenueActiveData ? (
+                  <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                    {revenueActiveData.day}: ₵${revenueActiveData.revenue.toLocaleString()}
+                  </p>
+                ) : (
+                  <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                    Hover over bars to see daily revenue
+                  </p>
+                )}
               </div>
+              <ChartContainer config={revenueChartConfig} className="h-[200px] w-full">
+                <BarChart
+                  accessibilityLayer
+                  data={revenueChartData}
+                  onMouseLeave={() => setRevenueActiveIndex(null)}
+                >
+                  <defs>
+                    <pattern
+                      id="revenue-overview-pattern-dots"
+                      x="0"
+                      y="0"
+                      width="10"
+                      height="10"
+                      patternUnits="userSpaceOnUse"
+                    >
+                      <circle
+                        className="dark:text-muted/40 text-muted"
+                        cx="2"
+                        cy="2"
+                        r="1"
+                        fill="currentColor"
+                      />
+                    </pattern>
+                  </defs>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="100%"
+                    height="85%"
+                    fill="url(#revenue-overview-pattern-dots)"
+                  />
+                  <XAxis
+                    dataKey="day"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    className="text-xs"
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent hideLabel />}
+                  />
+                  <Bar dataKey="revenue" radius={4} fill="var(--color-revenue)">
+                    {revenueChartData.map((_, index) => (
+                      <Cell
+                        className="duration-200"
+                        key={`cell-${index}`}
+                        fillOpacity={
+                          revenueActiveIndex === null ? 1 : revenueActiveIndex === index ? 1 : 0.3
+                        }
+                        stroke={revenueActiveIndex === index ? "var(--color-revenue)" : ""}
+                        strokeWidth={revenueActiveIndex === index ? 2 : 0}
+                        onMouseEnter={() => setRevenueActiveIndex(index)}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
             </div>
           </div>
 
           {/* Revenue by Channel */}
           <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)]">
             <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">Revenue by Channel</h3>
-            <div className="space-y-3">
+            <ChartContainer config={revenueByChannelConfig} className="mx-auto aspect-square max-h-[250px]">
+              <PieChart>
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="name" hideLabel />}
+                />
+                <Pie
+                  data={revenueByChannelData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={30}
+                  radius={80}
+                  cornerRadius={8}
+                  paddingAngle={4}
+                >
+                  <LabelList
+                    dataKey="name"
+                    stroke="none"
+                    fontSize={10}
+                    fontWeight={500}
+                    fill="currentColor"
+                    formatter={(value: string) => {
+                      const channel = mockData.revenueByChannel.find(c => c.name === value);
+                      return channel ? `${channel.percentage}%` : "";
+                    }}
+                  />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+            <div className="mt-4 space-y-2">
               {mockData.revenueByChannel.map((channel, i) => (
-                <div key={i}>
-                  <div className="flex justify-between text-sm mb-1">
+                <div key={i} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: revenueByChannelData[i].fill }} />
                     <span className="text-[var(--foreground)]">{channel.name}</span>
-                    <span className="text-[var(--muted-foreground)]">${channel.amount.toLocaleString()} ({channel.percentage}%)</span>
                   </div>
-                  <div className="h-2 bg-[var(--muted)] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[var(--primary)] rounded-full transition-all"
-                      style={{ width: `${channel.percentage}%` }}
-                    />
-                  </div>
+                  <span className="text-[var(--muted-foreground)]">₵${channel.amount.toLocaleString()} ({channel.percentage}%)</span>
                 </div>
               ))}
             </div>
@@ -367,19 +557,41 @@ export default function DashboardPage() {
           {/* Revenue by Payment Method */}
           <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)]">
             <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">Revenue by Payment Method</h3>
-            <div className="space-y-4">
+            <ChartContainer config={revenueByPaymentConfig} className="mx-auto aspect-square max-h-[250px]">
+              <PieChart>
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="name" hideLabel />}
+                />
+                <Pie
+                  data={revenueByPaymentData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={30}
+                  radius={80}
+                  cornerRadius={8}
+                  paddingAngle={4}
+                >
+                  <LabelList
+                    dataKey="percentage"
+                    stroke="none"
+                    fontSize={12}
+                    fontWeight={500}
+                    fill="currentColor"
+                    formatter={(value: string) => `${value}%`}
+                  />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+            <div className="mt-4 space-y-2">
               {mockData.revenueByPayment.map((payment, i) => {
                 const icons = ["📱", "💳", "💵"];
-                const colors = ["bg-emerald-500", "bg-blue-500", "bg-amber-500"];
                 return (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg ${colors[i]} flex items-center justify-center text-lg`}>
-                      {icons[i]}
+                  <div key={i} className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{icons[i]}</span>
+                      <span className="text-[var(--foreground)]">{payment.method}</span>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-[var(--foreground)]">{payment.method}</p>
-                      <p className="text-lg font-bold text-[var(--foreground)]">${payment.amount.toLocaleString()}</p>
-                    </div>
+                    <span className="text-[var(--muted-foreground)]">₵${payment.amount.toLocaleString()} ({revenueByPaymentData[i].percentage}%)</span>
                   </div>
                 );
               })}
@@ -395,12 +607,37 @@ export default function DashboardPage() {
           {/* Order Status Overview */}
           <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)]">
             <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">Order Status Overview</h3>
-            <div className="space-y-3">
+            <ChartContainer config={orderStatusConfig} className="mx-auto aspect-square max-h-[250px]">
+              <PieChart>
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="name" hideLabel />}
+                />
+                <Pie
+                  data={orderStatusData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={30}
+                  radius={80}
+                  cornerRadius={8}
+                  paddingAngle={4}
+                >
+                  <LabelList
+                    dataKey="value"
+                    stroke="none"
+                    fontSize={10}
+                    fontWeight={500}
+                    fill="currentColor"
+                    formatter={(value: number) => value.toString()}
+                  />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+            <div className="mt-4 space-y-2">
               {mockData.orderStatus.map((status, i) => (
-                <div key={i} className="flex items-center justify-between">
+                <div key={i} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${status.color}`} />
-                    <span className="text-sm text-[var(--foreground)]">{status.status}</span>
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: orderStatusData[i].fill }} />
+                    <span className="text-[var(--foreground)]">{status.status}</span>
                   </div>
                   <span className="text-sm font-semibold text-[var(--foreground)]">{status.count}</span>
                 </div>
@@ -433,7 +670,7 @@ export default function DashboardPage() {
                       <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">{order.time}</td>
                       <td className="px-4 py-3 text-sm text-[var(--foreground)]">{order.customer}</td>
                       <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">{order.channel}</td>
-                      <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">${order.amount.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">₵${order.amount.toFixed(2)}</td>
                       <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
                       <td className="px-4 py-3">
                         <button className="text-[var(--primary)] hover:underline text-sm">View</button>
@@ -453,19 +690,80 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Peak Hours Chart */}
           <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)]">
-            <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">Peak Hours</h3>
-            <div className="flex items-end justify-between h-32 gap-0.5">
-              {mockData.peakHours.map((hour, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className={`w-full rounded-t-sm transition-all ${hour.orders === maxOrders ? 'bg-[var(--primary)]' : 'bg-[var(--primary)]/50'}`}
-                    style={{ height: `${(hour.orders / maxOrders) * 100}%` }}
-                  />
-                  <span className="text-[8px] text-[var(--muted-foreground)] rotate-[-45deg] origin-left whitespace-nowrap">{hour.hour}</span>
-                </div>
-              ))}
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-[var(--muted-foreground)]">Peak Hours</h3>
+              {activeData ? (
+                <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                  {activeData.hour}: {activeData.orders} orders
+                </p>
+              ) : (
+                <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                  Orders by hour today
+                </p>
+              )}
             </div>
-            <p className="text-xs text-[var(--muted-foreground)] mt-4">Busiest: 7 PM (35 orders)</p>
+            <ChartContainer config={chartConfig} className="h-[200px] w-full">
+              <BarChart
+                accessibilityLayer
+                data={chartData}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
+                <defs>
+                  <pattern
+                    id="peak-hours-pattern-dots"
+                    x="0"
+                    y="0"
+                    width="10"
+                    height="10"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <circle
+                      className="dark:text-muted/40 text-muted"
+                      cx="2"
+                      cy="2"
+                      r="1"
+                      fill="currentColor"
+                    />
+                  </pattern>
+                </defs>
+                <rect
+                  x="0"
+                  y="0"
+                  width="100%"
+                  height="85%"
+                  fill="url(#peak-hours-pattern-dots)"
+                />
+                <XAxis
+                  dataKey="hour"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.replace(" AM", "").replace(" PM", "")}
+                  className="text-xs"
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Bar dataKey="orders" radius={4} fill="var(--color-orders)">
+                  {chartData.map((_, index) => (
+                    <Cell
+                      className="duration-200"
+                      key={`cell-${index}`}
+                      fillOpacity={
+                        activeIndex === null ? 1 : activeIndex === index ? 1 : 0.3
+                      }
+                      stroke={activeIndex === index ? "var(--color-orders)" : ""}
+                      strokeWidth={activeIndex === index ? 2 : 0}
+                      onMouseEnter={() => setActiveIndex(index)}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+            <p className="text-xs text-[var(--muted-foreground)] mt-4">
+              Busiest: {mockData.peakHours.find(h => h.orders === maxOrders)?.hour} ({maxOrders} orders)
+            </p>
           </div>
 
           {/* Top Selling Items */}
@@ -480,7 +778,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-[var(--foreground)]">{item.qty} sold</p>
-                    <p className="text-xs text-[var(--muted-foreground)]">${item.revenue}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">₵${item.revenue}</p>
                   </div>
                 </div>
               ))}
@@ -493,7 +791,7 @@ export default function DashboardPage() {
             <div className="text-center py-4">
               <p className="text-4xl font-bold text-red-500">{mockData.failedPayments.count}</p>
               <p className="text-sm text-[var(--muted-foreground)] mt-1">unpaid payment links</p>
-              <p className="text-lg font-semibold text-red-500 mt-3">${mockData.failedPayments.lostRevenue}</p>
+              <p className="text-lg font-semibold text-red-500 mt-3">₵${mockData.failedPayments.lostRevenue}</p>
               <p className="text-xs text-[var(--muted-foreground)]">estimated lost revenue</p>
             </div>
             <button className="w-full mt-4 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--primary-hover)] transition-colors">
@@ -519,7 +817,7 @@ export default function DashboardPage() {
             </div>
             <div className="col-span-2 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
               <p className="text-sm text-amber-700 dark:text-amber-300">Pending Payments Total</p>
-              <p className="text-2xl font-bold text-amber-600">${mockData.pendingPaymentsTotal.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-amber-600">₵${mockData.pendingPaymentsTotal.toLocaleString()}</p>
             </div>
           </div>
         </div>
