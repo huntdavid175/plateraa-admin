@@ -4,14 +4,14 @@ import { useState } from "react";
 
 // Mock data
 const platformMetrics = {
-  restaurants: { total: 247, change: 12, changeType: "positive" },
-  totalUsers: { total: 1856, change: 145, changeType: "positive" },
+  restaurants: { total: 247, change: 12, changeType: "positive" as const },
+  totalUsers: { total: 1856, change: 145, changeType: "positive" as const },
   activeToday: { total: 189, percentage: 76 },
-  totalOrders: { total: 45678, change: 8.5, changeType: "positive" },
-  platformRevenue: { total: 12567890, change: 15.2, changeType: "positive" },
-  monthlyRecurring: { total: 1234500, change: 10.5, changeType: "positive" },
-  avgOrderValue: { total: 2345, change: 3.2, changeType: "positive" },
-  successRate: { total: 94.8, change: 1.2, changeType: "positive" },
+  totalOrders: { total: 45678, change: 8.5, changeType: "positive" as const },
+  platformRevenue: { total: 12567890, change: 15.2, changeType: "positive" as const },
+  monthlyRecurring: { total: 1234500, change: 10.5, changeType: "positive" as const },
+  avgOrderValue: { total: 2345, change: 3.2, changeType: "positive" as const },
+  successRate: { total: 94.8, change: 1.2, changeType: "positive" as const },
   systemUptime: { total: 99.97 },
 };
 

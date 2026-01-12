@@ -607,12 +607,19 @@ export default function CustomersPage() {
       // Group tags by customer_id
       const tagsByCustomer: Record<string, string[]> = {};
       if (tagsData) {
-        tagsData.forEach((ta: { customer_id: string; customer_tags: { name: string } | null }) => {
-          if (!tagsByCustomer[ta.customer_id]) {
-            tagsByCustomer[ta.customer_id] = [];
+        tagsData.forEach((ta) => {
+          const customerId = ta.customer_id as string;
+          const tags = ta.customer_tags as { name: string }[] | null;
+          
+          if (!tagsByCustomer[customerId]) {
+            tagsByCustomer[customerId] = [];
           }
-          if (ta.customer_tags?.name) {
-            tagsByCustomer[ta.customer_id].push(ta.customer_tags.name);
+          if (tags && Array.isArray(tags)) {
+            tags.forEach((tag) => {
+              if (tag.name) {
+                tagsByCustomer[customerId].push(tag.name);
+              }
+            });
           }
         });
       }

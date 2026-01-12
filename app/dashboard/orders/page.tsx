@@ -609,32 +609,43 @@ function CreateOrderModal({
         }
 
         if (data) {
-          const items: MenuItemForOrder[] = data.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: Number(item.price),
-            category:
-              (item.menu_categories as { name: string })?.name ||
-              "Uncategorized",
-            variants: (
-              (item.menu_item_variants as {
-                name: string;
-                price: number;
-                sort_order: number;
-              }[]) || []
-            )
-              .sort((a, b) => a.sort_order - b.sort_order)
-              .map((v) => ({ name: v.name, price: Number(v.price) })),
-            addons: (
-              (item.menu_item_addons as {
-                name: string;
-                price: number;
-                sort_order: number;
-              }[]) || []
-            )
-              .sort((a, b) => a.sort_order - b.sort_order)
-              .map((a) => ({ name: a.name, price: Number(a.price) })),
-          }));
+          const items: MenuItemForOrder[] = data.map((item) => {
+            // Handle menu_categories - could be object or array depending on query
+            const categoryData = item.menu_categories as { name: string } | { name: string }[] | null;
+            let categoryName = "Uncategorized";
+            if (categoryData) {
+              if (Array.isArray(categoryData)) {
+                categoryName = categoryData[0]?.name || "Uncategorized";
+              } else {
+                categoryName = categoryData.name || "Uncategorized";
+              }
+            }
+
+            return {
+              id: item.id,
+              name: item.name,
+              price: Number(item.price),
+              category: categoryName,
+              variants: (
+                (item.menu_item_variants as {
+                  name: string;
+                  price: number;
+                  sort_order: number;
+                }[]) || []
+              )
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((v) => ({ name: v.name, price: Number(v.price) })),
+              addons: (
+                (item.menu_item_addons as {
+                  name: string;
+                  price: number;
+                  sort_order: number;
+                }[]) || []
+              )
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((a) => ({ name: a.name, price: Number(a.price) })),
+            };
+          });
           setMenuItems(items);
 
           const uniqueCategories = [...new Set(items.map((i) => i.category))];
