@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Bar, BarChart, XAxis, Cell, Pie, PieChart, LabelList } from "recharts";
 import {
   ChartConfig,
@@ -8,15 +8,68 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { createClient } from "@/lib/supabase/client";
+import { useBranch } from "@/app/providers/BranchProvider";
 
-// Mock data for the dashboard
+// Helper function to format currency with thousand separators
+function formatCurrency(amount: number): string {
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+// Types for database data
+type Order = {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  customer_phone: string;
+  total_amount: number;
+  status: string;
+  channel: string;
+  payment_method: string | null;
+  delivery_type: string;
+  created_at: string;
+};
+
+type OrderItem = {
+  item_name: string;
+  quantity: number;
+  total_price: number;
+};
+
+type DashboardData = {
+  todayRevenue: number;
+  ordersToday: number;
+  ordersByStatus: {
+    pending: number;
+    paid: number;
+    preparing: number;
+    ready: number;
+    dispatched: number;
+    delivered: number;
+    cancelled: number;
+  };
+  avgOrderValue: number;
+  revenueByChannel: { name: string; amount: number; percentage: number }[];
+  revenueByPayment: { method: string; amount: number }[];
+  recentOrders: {
+    id: string;
+    time: string;
+    customer: string;
+    channel: string;
+    amount: number;
+    status: string;
+  }[];
+  topItems: { name: string; qty: number; revenue: number }[];
+  pendingPaymentsTotal: number;
+  deliveryAwaiting: number;
+  outForDelivery: number;
+};
+
+// Mock data for items we don't have in DB yet
 const mockData = {
-  todayRevenue: 12450.0,
-  ordersToday: 87,
-  ordersPaid: 72,
-  ordersPending: 10,
-  ordersCompleted: 65,
-  avgOrderValue: 143.1,
   conversionRate: 78.5,
   vsYesterday: 12.5,
   vsLastWeek: 8.3,
@@ -24,92 +77,6 @@ const mockData = {
   thisWeekRevenue: 45680.0,
   thisMonthRevenue: 156240.0,
   last30DaysRevenue: 189500.0,
-  revenueByChannel: [
-    { name: "Phone orders", amount: 4200, percentage: 33.7 },
-    { name: "Website", amount: 3100, percentage: 24.9 },
-    { name: "Social media", amount: 1850, percentage: 14.9 },
-    { name: "Bolt Food", amount: 2100, percentage: 16.9 },
-    { name: "Chowdeck", amount: 1200, percentage: 9.6 },
-  ],
-  revenueByPayment: [
-    { method: "Mobile Money", amount: 6800 },
-    { method: "Card", amount: 3950 },
-    { method: "Cash", amount: 1700 },
-  ],
-  orderStatus: [
-    { status: "Pending Payment", count: 5, color: "bg-amber-500" },
-    { status: "Paid (awaiting kitchen)", count: 8, color: "bg-blue-500" },
-    { status: "Preparing", count: 12, color: "bg-purple-500" },
-    { status: "Ready for pickup/delivery", count: 4, color: "bg-cyan-500" },
-    { status: "Out for delivery", count: 6, color: "bg-indigo-500" },
-    { status: "Completed today", count: 52, color: "bg-emerald-500" },
-  ],
-  recentOrders: [
-    {
-      id: "#ORD-2847",
-      time: "2:15 PM",
-      customer: "John Doe",
-      channel: "Website",
-      amount: 156.0,
-      status: "Preparing",
-    },
-    {
-      id: "#ORD-2846",
-      time: "2:08 PM",
-      customer: "Sarah Smith",
-      channel: "Bolt Food",
-      amount: 89.5,
-      status: "Ready",
-    },
-    {
-      id: "#ORD-2845",
-      time: "1:55 PM",
-      customer: "Mike Johnson",
-      channel: "Phone",
-      amount: 234.0,
-      status: "Delivered",
-    },
-    {
-      id: "#ORD-2844",
-      time: "1:42 PM",
-      customer: "Emma Wilson",
-      channel: "Chowdeck",
-      amount: 67.0,
-      status: "Preparing",
-    },
-    {
-      id: "#ORD-2843",
-      time: "1:30 PM",
-      customer: "David Brown",
-      channel: "Website",
-      amount: 145.0,
-      status: "Paid",
-    },
-    {
-      id: "#ORD-2842",
-      time: "1:18 PM",
-      customer: "Lisa Anderson",
-      channel: "Phone",
-      amount: 312.0,
-      status: "Completed",
-    },
-    {
-      id: "#ORD-2841",
-      time: "1:05 PM",
-      customer: "James Taylor",
-      channel: "Social",
-      amount: 98.0,
-      status: "Completed",
-    },
-    {
-      id: "#ORD-2840",
-      time: "12:52 PM",
-      customer: "Amy Martinez",
-      channel: "Bolt Food",
-      amount: 176.0,
-      status: "Completed",
-    },
-  ],
   peakHours: [
     { hour: "9 AM", orders: 5 },
     { hour: "10 AM", orders: 8 },
@@ -124,19 +91,9 @@ const mockData = {
     { hour: "7 PM", orders: 35 },
     { hour: "8 PM", orders: 30 },
   ],
-  topItems: [
-    { name: "Jollof Rice with Chicken", qty: 45, revenue: 2250 },
-    { name: "Fried Rice Special", qty: 38, revenue: 1900 },
-    { name: "Grilled Fish Combo", qty: 32, revenue: 2240 },
-    { name: "Pepper Soup", qty: 28, revenue: 840 },
-    { name: "Suya Platter", qty: 24, revenue: 960 },
-  ],
   failedPayments: { count: 8, lostRevenue: 1240 },
   paymentSuccessRate: 92.5,
   avgTimeToPayment: 4.2,
-  pendingPaymentsTotal: 1850,
-  deliveryAwaiting: 6,
-  outForDelivery: 4,
   avgDeliveryTime: 28,
   alerts: [
     { type: "warning", message: "5 orders pending payment for >30 minutes" },
@@ -152,7 +109,7 @@ const mockData = {
   ],
 };
 
-// Daily revenue data for chart (last 7 days)
+// Daily revenue data for chart (last 7 days) - mock for now
 const dailyRevenue = [
   { day: "Mon", amount: 8500 },
   { day: "Tue", amount: 9200 },
@@ -170,6 +127,7 @@ function MetricCard({
   change,
   changeType,
   icon,
+  loading,
 }: {
   title: string;
   value: string;
@@ -177,13 +135,18 @@ function MetricCard({
   change?: number;
   changeType?: "positive" | "negative" | "neutral";
   icon: React.ReactNode;
+  loading?: boolean;
 }) {
   return (
     <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)]">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-sm text-[var(--muted-foreground)] mb-1">{title}</p>
-          <p className="text-2xl font-bold text-[var(--foreground)]">{value}</p>
+          {loading ? (
+            <div className="h-8 w-24 bg-[var(--muted)] rounded animate-pulse" />
+          ) : (
+            <p className="text-2xl font-bold text-[var(--foreground)]">{value}</p>
+          )}
           {subtitle && (
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
               {subtitle}
@@ -245,24 +208,45 @@ function MetricCard({
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
+    preparing:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
     Preparing:
       "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+    ready: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
     Ready: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+    delivered:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
     Delivered:
       "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    paid: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
     Paid: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    completed:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
     Completed:
       "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    pending:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     Pending:
       "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    dispatched:
+      "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+    Dispatched:
+      "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+    cancelled:
+      "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+    Cancelled:
+      "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
   };
+  
+  const displayStatus = status.charAt(0).toUpperCase() + status.slice(1);
+  
   return (
     <span
       className={`px-2.5 py-1 rounded-full text-xs font-medium ${
         colors[status] || "bg-gray-100 text-gray-700"
       }`}
     >
-      {status}
+      {displayStatus}
     </span>
   );
 }
@@ -341,7 +325,51 @@ function AlertItem({ type, message }: { type: string; message: string }) {
   );
 }
 
+// Channel display names
+const channelNames: Record<string, string> = {
+  phone: "Phone orders",
+  website: "Website",
+  social: "Social media",
+  bolt_food: "Bolt Food",
+  chowdeck: "Chowdeck",
+  glovo: "Glovo",
+  walk_in: "Walk-in",
+  pos: "POS",
+};
+
+// Payment method display names
+const paymentNames: Record<string, string> = {
+  mobile_money: "Mobile Money",
+  card: "Card",
+  cash: "Cash",
+  bank_transfer: "Bank Transfer",
+};
+
 export default function DashboardPage() {
+  const { currentBranch } = useBranch();
+  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
+    todayRevenue: 0,
+    ordersToday: 0,
+    ordersByStatus: {
+      pending: 0,
+      paid: 0,
+      preparing: 0,
+      ready: 0,
+      dispatched: 0,
+      delivered: 0,
+      cancelled: 0,
+    },
+    avgOrderValue: 0,
+    revenueByChannel: [],
+    revenueByPayment: [],
+    recentOrders: [],
+    topItems: [],
+    pendingPaymentsTotal: 0,
+    deliveryAwaiting: 0,
+    outForDelivery: 0,
+  });
+
   const [currentTime] = useState(
     new Date().toLocaleTimeString("en-US", {
       hour: "2-digit",
@@ -353,6 +381,197 @@ export default function DashboardPage() {
     null
   );
   const maxOrders = Math.max(...mockData.peakHours.map((h) => h.orders));
+
+  const fetchDashboardData = useCallback(async () => {
+    if (!currentBranch) return;
+
+    setLoading(true);
+    const supabase = createClient();
+
+    try {
+      // Get today's start and end timestamps
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      // Fetch all orders for the branch
+      const { data: allOrders, error: ordersError } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("branch_id", currentBranch.id)
+        .order("created_at", { ascending: false });
+
+      if (ordersError) {
+        console.error("Error fetching orders:", ordersError);
+        return;
+      }
+
+      const orders: Order[] = allOrders || [];
+
+      // Filter today's orders
+      const todaysOrders = orders.filter((order) => {
+        const orderDate = new Date(order.created_at);
+        return orderDate >= todayStart && orderDate <= todayEnd;
+      });
+
+      // Calculate today's revenue (only delivered orders)
+      const todayRevenue = todaysOrders
+        .filter((o) => o.status === "delivered")
+        .reduce((sum, o) => sum + Number(o.total_amount), 0);
+
+      // Count orders by status
+      const ordersByStatus = {
+        pending: todaysOrders.filter((o) => o.status === "pending").length,
+        paid: todaysOrders.filter((o) => o.status === "paid").length,
+        preparing: todaysOrders.filter((o) => o.status === "preparing").length,
+        ready: todaysOrders.filter((o) => o.status === "ready").length,
+        dispatched: todaysOrders.filter((o) => o.status === "dispatched").length,
+        delivered: todaysOrders.filter((o) => o.status === "delivered").length,
+        cancelled: todaysOrders.filter((o) => o.status === "cancelled").length,
+      };
+
+      // Calculate average order value
+      const completedOrders = todaysOrders.filter(
+        (o) => o.status === "delivered" || o.status === "completed"
+      );
+      const avgOrderValue =
+        completedOrders.length > 0
+          ? completedOrders.reduce((sum, o) => sum + Number(o.total_amount), 0) /
+            completedOrders.length
+          : 0;
+
+      // Revenue by channel
+      const channelRevenue: Record<string, number> = {};
+      todaysOrders.forEach((order) => {
+        if (order.status === "delivered") {
+          channelRevenue[order.channel] =
+            (channelRevenue[order.channel] || 0) + Number(order.total_amount);
+        }
+      });
+
+      const totalChannelRevenue = Object.values(channelRevenue).reduce(
+        (a, b) => a + b,
+        0
+      );
+      const revenueByChannel = Object.entries(channelRevenue)
+        .map(([channel, amount]) => ({
+          name: channelNames[channel] || channel,
+          amount,
+          percentage:
+            totalChannelRevenue > 0
+              ? Math.round((amount / totalChannelRevenue) * 1000) / 10
+              : 0,
+        }))
+        .sort((a, b) => b.amount - a.amount);
+
+      // Revenue by payment method
+      const paymentRevenue: Record<string, number> = {};
+      todaysOrders.forEach((order) => {
+        if (order.status === "delivered" && order.payment_method) {
+          paymentRevenue[order.payment_method] =
+            (paymentRevenue[order.payment_method] || 0) +
+            Number(order.total_amount);
+        }
+      });
+
+      const revenueByPayment = Object.entries(paymentRevenue)
+        .map(([method, amount]) => ({
+          method: paymentNames[method] || method,
+          amount,
+        }))
+        .sort((a, b) => b.amount - a.amount);
+
+      // Recent orders (last 10)
+      const recentOrders = orders.slice(0, 10).map((order) => ({
+        id: order.order_number,
+        time: new Date(order.created_at).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        }),
+        customer: order.customer_name,
+        channel: channelNames[order.channel] || order.channel,
+        amount: Number(order.total_amount),
+        status: order.status,
+      }));
+
+      // Pending payments total
+      const pendingPaymentsTotal = todaysOrders
+        .filter((o) => o.status === "pending")
+        .reduce((sum, o) => sum + Number(o.total_amount), 0);
+
+      // Delivery stats
+      const deliveryAwaiting = todaysOrders.filter(
+        (o) => o.status === "ready" && o.delivery_type === "delivery"
+      ).length;
+      const outForDelivery = todaysOrders.filter(
+        (o) => o.status === "dispatched"
+      ).length;
+
+      // Fetch top items from order_items
+      const { data: orderItems, error: itemsError } = await supabase
+        .from("order_items")
+        .select(
+          `
+          item_name,
+          quantity,
+          total_price,
+          order_id,
+          orders!inner(branch_id, created_at, status)
+        `
+        )
+        .eq("orders.branch_id", currentBranch.id);
+
+      let topItems: { name: string; qty: number; revenue: number }[] = [];
+      if (!itemsError && orderItems) {
+        // Aggregate items
+        const itemStats: Record<string, { qty: number; revenue: number }> = {};
+        orderItems.forEach((item) => {
+          // orders is an array from the join, get first element
+          const orderData = Array.isArray(item.orders) ? item.orders[0] : item.orders;
+          if (orderData?.status === "delivered") {
+            if (!itemStats[item.item_name]) {
+              itemStats[item.item_name] = { qty: 0, revenue: 0 };
+            }
+            itemStats[item.item_name].qty += item.quantity;
+            itemStats[item.item_name].revenue += Number(item.total_price);
+          }
+        });
+
+        topItems = Object.entries(itemStats)
+          .map(([name, stats]) => ({
+            name,
+            qty: stats.qty,
+            revenue: stats.revenue,
+          }))
+          .sort((a, b) => b.qty - a.qty)
+          .slice(0, 5);
+      }
+
+      setDashboardData({
+        todayRevenue,
+        ordersToday: todaysOrders.length,
+        ordersByStatus,
+        avgOrderValue,
+        revenueByChannel,
+        revenueByPayment,
+        recentOrders,
+        topItems,
+        pendingPaymentsTotal,
+        deliveryAwaiting,
+        outForDelivery,
+      });
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentBranch]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   // Chart configs for pie charts
   const revenueByChannelConfig = {
@@ -382,44 +601,77 @@ export default function DashboardPage() {
   } satisfies ChartConfig;
 
   // Transform data for pie charts
-  const revenueByChannelData = mockData.revenueByChannel.map((channel, i) => {
-    const keys = ["phone", "website", "social", "bolt", "chowdeck"];
-    return {
+  const chartColors = [
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+  ];
+
+  const revenueByChannelData = dashboardData.revenueByChannel.map(
+    (channel, i) => ({
       name: channel.name,
       value: channel.amount,
-      fill: `var(--color-${keys[i]})`,
-    };
-  });
+      fill: chartColors[i % chartColors.length],
+    })
+  );
 
-  const totalPaymentRevenue = mockData.revenueByPayment.reduce(
+  const totalPaymentRevenue = dashboardData.revenueByPayment.reduce(
     (sum, p) => sum + p.amount,
     0
   );
-  const revenueByPaymentData = mockData.revenueByPayment.map((payment, i) => {
-    const keys = ["mobile", "card", "cash"];
-    return {
+  const revenueByPaymentData = dashboardData.revenueByPayment.map(
+    (payment, i) => ({
       name: payment.method,
       value: payment.amount,
-      fill: `var(--color-${keys[i]})`,
-      percentage: ((payment.amount / totalPaymentRevenue) * 100).toFixed(1),
-    };
-  });
+      fill: chartColors[i % chartColors.length],
+      percentage:
+        totalPaymentRevenue > 0
+          ? ((payment.amount / totalPaymentRevenue) * 100).toFixed(1)
+          : "0",
+    })
+  );
 
-  const orderStatusData = mockData.orderStatus.map((status, i) => {
-    const colors = [
-      "hsl(45, 93%, 47%)", // amber-500 for pending
-      "hsl(217, 91%, 60%)", // blue-500 for paid
-      "hsl(262, 83%, 58%)", // purple-500 for preparing
-      "hsl(188, 94%, 43%)", // cyan-500 for ready
-      "hsl(239, 84%, 67%)", // indigo-500 for delivery
-      "hsl(142, 76%, 36%)", // emerald-500 for completed
-    ];
-    return {
-      name: status.status,
-      value: status.count,
-      fill: colors[i],
-    };
-  });
+  // Order status data for pie chart
+  const orderStatusList = [
+    {
+      status: "Pending Payment",
+      count: dashboardData.ordersByStatus.pending,
+      color: "hsl(45, 93%, 47%)",
+    },
+    {
+      status: "Paid (awaiting kitchen)",
+      count: dashboardData.ordersByStatus.paid,
+      color: "hsl(217, 91%, 60%)",
+    },
+    {
+      status: "Preparing",
+      count: dashboardData.ordersByStatus.preparing,
+      color: "hsl(262, 83%, 58%)",
+    },
+    {
+      status: "Ready for pickup/delivery",
+      count: dashboardData.ordersByStatus.ready,
+      color: "hsl(188, 94%, 43%)",
+    },
+    {
+      status: "Out for delivery",
+      count: dashboardData.ordersByStatus.dispatched,
+      color: "hsl(239, 84%, 67%)",
+    },
+    {
+      status: "Completed today",
+      count: dashboardData.ordersByStatus.delivered,
+      color: "hsl(142, 76%, 36%)",
+    },
+  ];
+
+  const orderStatusData = orderStatusList.map((status) => ({
+    name: status.status,
+    value: status.count,
+    fill: status.color,
+  }));
 
   // Transform peakHours data for the chart
   const chartData = mockData.peakHours.map((h) => ({
@@ -437,7 +689,7 @@ export default function DashboardPage() {
   const activeData = useMemo(() => {
     if (activeIndex === null) return null;
     return chartData[activeIndex];
-  }, [activeIndex]);
+  }, [activeIndex, chartData]);
 
   // Revenue overview bar chart data and config
   const revenueChartData = dailyRevenue.map((d) => ({
@@ -455,7 +707,10 @@ export default function DashboardPage() {
   const revenueActiveData = useMemo(() => {
     if (revenueActiveIndex === null) return null;
     return revenueChartData[revenueActiveIndex];
-  }, [revenueActiveIndex]);
+  }, [revenueActiveIndex, revenueChartData]);
+
+  // Calculate subtitle for orders
+  const ordersSubtitle = `${dashboardData.ordersByStatus.paid + dashboardData.ordersByStatus.delivered} paid • ${dashboardData.ordersByStatus.pending} pending • ${dashboardData.ordersByStatus.delivered} completed`;
 
   return (
     <div className="p-6 space-y-6">
@@ -487,10 +742,11 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
             title="Today's Revenue"
-            value={`₵{mockData.todayRevenue.toLocaleString()}`}
+            value={`₵${formatCurrency(dashboardData.todayRevenue)}`}
             change={mockData.vsYesterday}
             changeType="positive"
             subtitle="Live updating"
+            loading={loading}
             icon={
               <svg
                 className="w-5 h-5"
@@ -509,8 +765,9 @@ export default function DashboardPage() {
           />
           <MetricCard
             title="Orders Today"
-            value={mockData.ordersToday.toString()}
-            subtitle={`${mockData.ordersPaid} paid • ${mockData.ordersPending} pending • ${mockData.ordersCompleted} completed`}
+            value={dashboardData.ordersToday.toString()}
+            subtitle={ordersSubtitle}
+            loading={loading}
             icon={
               <svg
                 className="w-5 h-5"
@@ -529,9 +786,10 @@ export default function DashboardPage() {
           />
           <MetricCard
             title="Average Order Value"
-            value={`₵{mockData.avgOrderValue.toFixed(2)}`}
+            value={`₵${formatCurrency(dashboardData.avgOrderValue)}`}
             change={5.2}
             changeType="positive"
+            loading={loading}
             icon={
               <svg
                 className="w-5 h-5"
@@ -783,60 +1041,76 @@ export default function DashboardPage() {
             <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">
               Revenue by Channel
             </h3>
-            <ChartContainer
-              config={revenueByChannelConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <PieChart>
-                <ChartTooltip
-                  content={<ChartTooltipContent nameKey="name" hideLabel />}
-                />
-                <Pie
-                  data={revenueByChannelData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={30}
-                  radius={80}
-                  cornerRadius={8}
-                  paddingAngle={4}
+            {loading ? (
+              <div className="flex items-center justify-center h-[250px]">
+                <div className="w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : revenueByChannelData.length > 0 ? (
+              <>
+                <ChartContainer
+                  config={revenueByChannelConfig}
+                  className="mx-auto aspect-square max-h-[250px]"
                 >
-                  <LabelList
-                    dataKey="name"
-                    stroke="none"
-                    fontSize={10}
-                    fontWeight={500}
-                    fill="currentColor"
-                    formatter={(value: string) => {
-                      const channel = mockData.revenueByChannel.find(
-                        (c) => c.name === value
-                      );
-                      return channel ? `${channel.percentage}%` : "";
-                    }}
-                  />
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-            <div className="mt-4 space-y-2">
-              {mockData.revenueByChannel.map((channel, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between text-xs"
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: revenueByChannelData[i].fill }}
+                  <PieChart>
+                    <ChartTooltip
+                      content={<ChartTooltipContent nameKey="name" hideLabel />}
                     />
-                    <span className="text-[var(--foreground)]">
-                      {channel.name}
-                    </span>
-                  </div>
-                  <span className="text-[var(--muted-foreground)]">
-                    ₵{channel.amount.toLocaleString()} ({channel.percentage}%)
-                  </span>
+                    <Pie
+                      data={revenueByChannelData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={30}
+                      outerRadius={80}
+                      cornerRadius={8}
+                      paddingAngle={4}
+                    >
+                      <LabelList
+                        dataKey="name"
+                        stroke="none"
+                        fontSize={10}
+                        fontWeight={500}
+                        fill="currentColor"
+                        formatter={(value: string) => {
+                          const channel = dashboardData.revenueByChannel.find(
+                            (c) => c.name === value
+                          );
+                          return channel ? `${channel.percentage}%` : "";
+                        }}
+                      />
+                    </Pie>
+                  </PieChart>
+                </ChartContainer>
+                <div className="mt-4 space-y-2">
+                  {dashboardData.revenueByChannel.map((channel, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between text-xs"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{
+                            backgroundColor:
+                              chartColors[i % chartColors.length],
+                          }}
+                        />
+                        <span className="text-[var(--foreground)]">
+                          {channel.name}
+                        </span>
+                      </div>
+                      <span className="text-[var(--muted-foreground)]">
+                        ₵{formatCurrency(channel.amount)} ({channel.percentage}
+                        %)
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-[250px] text-[var(--muted-foreground)]">
+                No revenue data yet
+              </div>
+            )}
           </div>
 
           {/* Revenue by Payment Method */}
@@ -844,56 +1118,75 @@ export default function DashboardPage() {
             <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">
               Revenue by Payment Method
             </h3>
-            <ChartContainer
-              config={revenueByPaymentConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <PieChart>
-                <ChartTooltip
-                  content={<ChartTooltipContent nameKey="name" hideLabel />}
-                />
-                <Pie
-                  data={revenueByPaymentData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={30}
-                  radius={80}
-                  cornerRadius={8}
-                  paddingAngle={4}
+            {loading ? (
+              <div className="flex items-center justify-center h-[250px]">
+                <div className="w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : revenueByPaymentData.length > 0 ? (
+              <>
+                <ChartContainer
+                  config={revenueByPaymentConfig}
+                  className="mx-auto aspect-square max-h-[250px]"
                 >
-                  <LabelList
-                    dataKey="percentage"
-                    stroke="none"
-                    fontSize={12}
-                    fontWeight={500}
-                    fill="currentColor"
-                    formatter={(value: string) => `${value}%`}
-                  />
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-            <div className="mt-4 space-y-2">
-              {mockData.revenueByPayment.map((payment, i) => {
-                const icons = ["📱", "💳", "💵"];
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between text-xs"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{icons[i]}</span>
-                      <span className="text-[var(--foreground)]">
-                        {payment.method}
-                      </span>
-                    </div>
-                    <span className="text-[var(--muted-foreground)]">
-                      ₵{payment.amount.toLocaleString()} (
-                      {revenueByPaymentData[i].percentage}%)
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+                  <PieChart>
+                    <ChartTooltip
+                      content={<ChartTooltipContent nameKey="name" hideLabel />}
+                    />
+                    <Pie
+                      data={revenueByPaymentData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={30}
+                      outerRadius={80}
+                      cornerRadius={8}
+                      paddingAngle={4}
+                    >
+                      <LabelList
+                        dataKey="percentage"
+                        stroke="none"
+                        fontSize={12}
+                        fontWeight={500}
+                        fill="currentColor"
+                        formatter={(value: string) => `${value}%`}
+                      />
+                    </Pie>
+                  </PieChart>
+                </ChartContainer>
+                <div className="mt-4 space-y-2">
+                  {dashboardData.revenueByPayment.map((payment, i) => {
+                    const icons: Record<string, string> = {
+                      "Mobile Money": "📱",
+                      Card: "💳",
+                      Cash: "💵",
+                      "Bank Transfer": "🏦",
+                    };
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">
+                            {icons[payment.method] || "💰"}
+                          </span>
+                          <span className="text-[var(--foreground)]">
+                            {payment.method}
+                          </span>
+                        </div>
+                        <span className="text-[var(--muted-foreground)]">
+                          ₵{formatCurrency(payment.amount)} (
+                          {revenueByPaymentData[i]?.percentage || 0}%)
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-[250px] text-[var(--muted-foreground)]">
+                No revenue data yet
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -909,55 +1202,63 @@ export default function DashboardPage() {
             <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">
               Order Status Overview
             </h3>
-            <ChartContainer
-              config={orderStatusConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <PieChart>
-                <ChartTooltip
-                  content={<ChartTooltipContent nameKey="name" hideLabel />}
-                />
-                <Pie
-                  data={orderStatusData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={30}
-                  radius={80}
-                  cornerRadius={8}
-                  paddingAngle={4}
+            {loading ? (
+              <div className="flex items-center justify-center h-[250px]">
+                <div className="w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              <>
+                <ChartContainer
+                  config={orderStatusConfig}
+                  className="mx-auto aspect-square max-h-[250px]"
                 >
-                  <LabelList
-                    dataKey="value"
-                    stroke="none"
-                    fontSize={10}
-                    fontWeight={500}
-                    fill="currentColor"
-                    formatter={(value: number) => value.toString()}
-                  />
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-            <div className="mt-4 space-y-2">
-              {mockData.orderStatus.map((status, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between text-xs"
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: orderStatusData[i].fill }}
+                  <PieChart>
+                    <ChartTooltip
+                      content={<ChartTooltipContent nameKey="name" hideLabel />}
                     />
-                    <span className="text-[var(--foreground)]">
-                      {status.status}
-                    </span>
-                  </div>
-                  <span className="text-sm font-semibold text-[var(--foreground)]">
-                    {status.count}
-                  </span>
+                    <Pie
+                      data={orderStatusData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={30}
+                      outerRadius={80}
+                      cornerRadius={8}
+                      paddingAngle={4}
+                    >
+                      <LabelList
+                        dataKey="value"
+                        stroke="none"
+                        fontSize={10}
+                        fontWeight={500}
+                        fill="currentColor"
+                        formatter={(value: number) => value.toString()}
+                      />
+                    </Pie>
+                  </PieChart>
+                </ChartContainer>
+                <div className="mt-4 space-y-2">
+                  {orderStatusList.map((status, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between text-xs"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: status.color }}
+                        />
+                        <span className="text-[var(--foreground)]">
+                          {status.status}
+                        </span>
+                      </div>
+                      <span className="text-sm font-semibold text-[var(--foreground)]">
+                        {status.count}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
 
           {/* Recent Orders Table */}
@@ -995,36 +1296,55 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]">
-                  {mockData.recentOrders.map((order, i) => (
-                    <tr
-                      key={i}
-                      className="hover:bg-[var(--muted)] transition-colors"
-                    >
-                      <td className="px-4 py-3 text-sm font-medium text-[var(--primary)]">
-                        {order.id}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">
-                        {order.time}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-[var(--foreground)]">
-                        {order.customer}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">
-                        {order.channel}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">
-                        ₵{order.amount.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={order.status} />
-                      </td>
-                      <td className="px-4 py-3">
-                        <button className="text-[var(--primary)] hover:underline text-sm">
-                          View
-                        </button>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-8 text-center">
+                        <div className="flex items-center justify-center">
+                          <div className="w-6 h-6 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+                        </div>
                       </td>
                     </tr>
-                  ))}
+                  ) : dashboardData.recentOrders.length > 0 ? (
+                    dashboardData.recentOrders.map((order, i) => (
+                      <tr
+                        key={i}
+                        className="hover:bg-[var(--muted)] transition-colors"
+                      >
+                        <td className="px-4 py-3 text-sm font-medium text-[var(--primary)]">
+                          {order.id}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">
+                          {order.time}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-[var(--foreground)]">
+                          {order.customer}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">
+                          {order.channel}
+                        </td>
+                        <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">
+                          ₵{formatCurrency(order.amount)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={order.status} />
+                        </td>
+                        <td className="px-4 py-3">
+                          <button className="text-[var(--primary)] hover:underline text-sm">
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-4 py-8 text-center text-[var(--muted-foreground)]"
+                      >
+                        No orders yet
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1131,30 +1451,45 @@ export default function DashboardPage() {
           {/* Top Selling Items */}
           <div className="bg-[var(--card)] rounded-xl p-5 border border-[var(--border)]">
             <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-4">
-              Top Selling Items Today
+              Top Selling Items
             </h3>
-            <div className="space-y-3">
-              {mockData.topItems.map((item, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full bg-[var(--muted)] flex items-center justify-center text-xs font-medium text-[var(--muted-foreground)]">
-                      {i + 1}
-                    </span>
-                    <span className="text-sm text-[var(--foreground)]">
-                      {item.name}
-                    </span>
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
+                    className="h-10 bg-[var(--muted)] rounded animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : dashboardData.topItems.length > 0 ? (
+              <div className="space-y-3">
+                {dashboardData.topItems.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-full bg-[var(--muted)] flex items-center justify-center text-xs font-medium text-[var(--muted-foreground)]">
+                        {i + 1}
+                      </span>
+                      <span className="text-sm text-[var(--foreground)]">
+                        {item.name}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-[var(--foreground)]">
+                        {item.qty} sold
+                      </p>
+                      <p className="text-xs text-[var(--muted-foreground)]">
+                        ₵{formatCurrency(item.revenue)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-[var(--foreground)]">
-                      {item.qty} sold
-                    </p>
-                    <p className="text-xs text-[var(--muted-foreground)]">
-                      ₵{item.revenue}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-[200px] text-[var(--muted-foreground)]">
+                No sales data yet
+              </div>
+            )}
           </div>
 
           {/* Failed/Abandoned Payments */}
@@ -1212,7 +1547,7 @@ export default function DashboardPage() {
                 Pending Payments Total
               </p>
               <p className="text-2xl font-bold text-amber-600">
-                ₵{mockData.pendingPaymentsTotal.toLocaleString()}
+                ₵{formatCurrency(dashboardData.pendingPaymentsTotal)}
               </p>
             </div>
           </div>
@@ -1226,7 +1561,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="text-center p-3 bg-[var(--muted)] rounded-lg">
               <p className="text-2xl font-bold text-[var(--foreground)]">
-                {mockData.deliveryAwaiting}
+                {dashboardData.deliveryAwaiting}
               </p>
               <p className="text-xs text-[var(--muted-foreground)]">
                 Awaiting Dispatch
@@ -1234,7 +1569,7 @@ export default function DashboardPage() {
             </div>
             <div className="text-center p-3 bg-[var(--muted)] rounded-lg">
               <p className="text-2xl font-bold text-[var(--foreground)]">
-                {mockData.outForDelivery}
+                {dashboardData.outForDelivery}
               </p>
               <p className="text-xs text-[var(--muted-foreground)]">
                 Out for Delivery

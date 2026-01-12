@@ -4,6 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useBranch } from "@/app/providers/BranchProvider";
 
+// Helper function to format currency with thousand separators
+function formatCurrency(amount: number): string {
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 // Menu item type for order creation
 type MenuItemForOrder = {
   id: string;
@@ -322,7 +330,7 @@ function OrderDetailsModal({
                     {item.qty}x {item.name}
                   </span>
                   <span className="text-[var(--muted-foreground)]">
-                    ₵{item.price.toFixed(2)}
+                    ₵{formatCurrency(item.price)}
                   </span>
                 </div>
               ))}
@@ -332,7 +340,7 @@ function OrderDetailsModal({
                     Subtotal
                   </span>
                   <span className="text-[var(--foreground)]">
-                    ₵{order.subtotal.toFixed(2)}
+                    ₵{formatCurrency(order.subtotal)}
                   </span>
                 </div>
                 {order.delivery > 0 && (
@@ -341,14 +349,14 @@ function OrderDetailsModal({
                       Delivery
                     </span>
                     <span className="text-[var(--foreground)]">
-                      ₵{order.delivery.toFixed(2)}
+                      ₵{formatCurrency(order.delivery)}
                     </span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-bold mt-1">
                   <span className="text-[var(--foreground)]">Total</span>
                   <span className="text-[var(--foreground)]">
-                    ₵{order.amount.toFixed(2)}
+                    ₵{formatCurrency(order.amount)}
                   </span>
                 </div>
               </div>
@@ -405,10 +413,14 @@ function OrderDetailsModal({
                 </span>
                 <span
                   className={`text-sm font-medium ${
-                    order.paidAt ? "text-emerald-600" : "text-amber-600"
+                    order.paidAt || ["paid", "preparing", "ready", "dispatched", "delivered"].includes(order.rawStatus)
+                      ? "text-emerald-600"
+                      : "text-amber-600"
                   }`}
                 >
-                  {order.paidAt ? "✅ Confirmed" : "⏳ Pending"}
+                  {order.paidAt || ["paid", "preparing", "ready", "dispatched", "delivered"].includes(order.rawStatus)
+                    ? "✅ Confirmed"
+                    : "⏳ Pending"}
                 </span>
               </div>
             </div>
@@ -1057,7 +1069,7 @@ function CreateOrderModal({
                               {item.name}
                             </p>
                             <p className="text-sm text-[var(--muted-foreground)]">
-                              ₵{item.price.toFixed(2)}
+                              ₵{formatCurrency(item.price)}
                             </p>
                             {item.variants && item.variants.length > 0 && (
                               <div className="flex gap-1 mt-1 flex-wrap">
@@ -1116,8 +1128,7 @@ function CreateOrderModal({
                               )}
                             </p>
                             <p className="text-xs text-[var(--muted-foreground)]">
-                              ₵{item.unitPrice.toFixed(2)} × {item.quantity} = ₵
-                              {item.totalPrice.toFixed(2)}
+                              ₵{formatCurrency(item.unitPrice)} × {item.quantity} = ₵{formatCurrency(item.totalPrice)}
                             </p>
                           </div>
                           <div className="flex items-center gap-1">
@@ -1154,7 +1165,7 @@ function CreateOrderModal({
                       Subtotal
                     </span>
                     <span className="text-[var(--foreground)]">
-                      ₵{subtotal.toFixed(2)}
+                      ₵{formatCurrency(subtotal)}
                     </span>
                   </div>
                   {deliveryFee > 0 && (
@@ -1163,14 +1174,14 @@ function CreateOrderModal({
                         Delivery
                       </span>
                       <span className="text-[var(--foreground)]">
-                        ₵{deliveryFee.toFixed(2)}
+                        ₵{formatCurrency(deliveryFee)}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
                     <span className="text-[var(--primary)]">
-                      ₵{total.toFixed(2)}
+                      ₵{formatCurrency(total)}
                     </span>
                   </div>
                 </div>
@@ -1249,7 +1260,7 @@ function CreateOrderModal({
                             {item.quantity}× {item.name}
                             {item.variantName && ` (${item.variantName})`}
                           </span>
-                          <span>₵{item.totalPrice.toFixed(2)}</span>
+                          <span>₵{formatCurrency(item.totalPrice)}</span>
                         </div>
                       ))}
                     </div>
@@ -1258,20 +1269,20 @@ function CreateOrderModal({
                         <span className="text-[var(--muted-foreground)]">
                           Subtotal
                         </span>
-                        <span>₵{subtotal.toFixed(2)}</span>
+                        <span>₵{formatCurrency(subtotal)}</span>
                       </div>
                       {deliveryFee > 0 && (
                         <div className="flex justify-between text-sm">
                           <span className="text-[var(--muted-foreground)]">
                             Delivery Fee
                           </span>
-                          <span>₵{deliveryFee.toFixed(2)}</span>
+                          <span>₵{formatCurrency(deliveryFee)}</span>
                         </div>
                       )}
                       <div className="flex justify-between font-bold text-lg pt-1">
                         <span>Total</span>
                         <span className="text-[var(--primary)]">
-                          ₵{total.toFixed(2)}
+                          ₵{formatCurrency(total)}
                         </span>
                       </div>
                     </div>
@@ -1888,11 +1899,11 @@ export default function OrdersPage() {
         </span>
         <span className="text-[var(--muted-foreground)]">|</span>
         <span className="text-[var(--foreground)]">
-          Total: <strong>₵{stats.totalAmount.toFixed(2)}</strong>
+          Total: <strong>₵{formatCurrency(stats.totalAmount)}</strong>
         </span>
         <span className="text-[var(--muted-foreground)]">|</span>
         <span className="text-[var(--foreground)]">
-          Avg: <strong>₵{stats.avgAmount.toFixed(2)}</strong>
+          Avg: <strong>₵{formatCurrency(stats.avgAmount)}</strong>
         </span>
         <span className="text-[var(--muted-foreground)]">|</span>
         <span className="text-red-600">Pending: {stats.pending}</span>
@@ -2052,7 +2063,7 @@ export default function OrdersPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">
-                        ₵{order.amount.toFixed(2)}
+                        ₵{formatCurrency(order.amount)}
                       </td>
                       <td className="px-4 py-3">
                         <StatusBadge
@@ -2233,7 +2244,7 @@ export default function OrdersPage() {
                 <p className="text-sm text-[var(--muted-foreground)] mb-3">
                   {channelIcons[order.channel]?.icon} {order.channel} •{" "}
                   <span className="font-medium text-[var(--foreground)]">
-                    ₵{order.amount.toFixed(2)}
+                    ₵{formatCurrency(order.amount)}
                   </span>
                 </p>
                 <p className="text-xs text-[var(--muted-foreground)] mb-4 line-clamp-1">

@@ -4,6 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useBranch } from "@/app/providers/BranchProvider";
 
+// Helper function to format currency with thousand separators
+function formatCurrency(amount: number): string {
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 // Customer type from database
 type Customer = {
   id: string;
@@ -497,7 +505,7 @@ function CustomerProfileModal({
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-[var(--foreground)]">
-                      ₵{order.amount.toFixed(2)}
+                      ₵{formatCurrency(order.amount)}
                     </p>
                     <p
                       className={`text-xs ${
@@ -1114,7 +1122,7 @@ export default function CustomersPage() {
                       </td>
                       <td className="px-4 py-3">
                         <p className="text-sm font-medium text-[var(--foreground)]">
-                          ₵{customer.totalSpent.toFixed(2)}
+                          ₵{formatCurrency(customer.totalSpent)}
                         </p>
                         <p className="text-xs text-[var(--muted-foreground)]">
                           ₵{customer.avgOrder.toFixed(0)}/avg
@@ -1242,7 +1250,7 @@ export default function CustomersPage() {
                   <SegmentBadge segment={customer.segment} />
                 </div>
                 <div className="text-sm text-[var(--muted-foreground)] mb-3">
-                  {customer.orders} orders • ₵{customer.totalSpent.toFixed(2)}{" "}
+                  {customer.orders} orders • ₵{formatCurrency(customer.totalSpent)}{" "}
                   spent
                 </div>
                 <div className="text-xs text-[var(--muted-foreground)] mb-4">
