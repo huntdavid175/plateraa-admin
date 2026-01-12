@@ -9,7 +9,16 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-type FinancialTab = "overview" | "income" | "expenses" | "invoices" | "pl" | "cashflow" | "bank" | "reports" | "settings";
+type FinancialTab =
+  | "overview"
+  | "income"
+  | "expenses"
+  | "invoices"
+  | "pl"
+  | "cashflow"
+  | "bank"
+  | "reports"
+  | "settings";
 
 // Mock data
 const financialOverview = {
@@ -49,40 +58,99 @@ const incomeData = {
   ],
   otherIncome: 50000,
   otherIncomeItems: [
-    { date: "Jan 15, 2026", category: "Catering", amount: 35000, notes: "Wedding" },
-    { date: "Jan 10, 2026", category: "Merchandise", amount: 15000, notes: "T-shirts" },
+    {
+      date: "Jan 15, 2026",
+      category: "Catering",
+      amount: 35000,
+      notes: "Wedding",
+    },
+    {
+      date: "Jan 10, 2026",
+      category: "Merchandise",
+      amount: 15000,
+      notes: "T-shirts",
+    },
   ],
 };
 
 const unpaidBills = [
-  { vendor: "Fresh Foods Ltd", amount: 156000, dueDate: "Jan 25, 2026", days: "OVERDUE", priority: "high" },
-  { vendor: "Electricity Co.", amount: 65000, dueDate: "Jan 28, 2026", days: "1 day", priority: "medium" },
-  { vendor: "Internet ISP", amount: 12000, dueDate: "Feb 5, 2026", days: "10 days", priority: "low" },
+  {
+    vendor: "Fresh Foods Ltd",
+    amount: 156000,
+    dueDate: "Jan 25, 2026",
+    days: "OVERDUE",
+    priority: "high",
+  },
+  {
+    vendor: "Electricity Co.",
+    amount: 65000,
+    dueDate: "Jan 28, 2026",
+    days: "1 day",
+    priority: "medium",
+  },
+  {
+    vendor: "Internet ISP",
+    amount: 12000,
+    dueDate: "Feb 5, 2026",
+    days: "10 days",
+    priority: "low",
+  },
 ];
 
-function MetricCard({ title, value, change, subtitle }: { title: string; value: string; change?: string; subtitle?: string }) {
+function MetricCard({
+  title,
+  value,
+  change,
+  subtitle,
+}: {
+  title: string;
+  value: string;
+  change?: string;
+  subtitle?: string;
+}) {
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-      <p className="text-xs text-[var(--muted-foreground)] uppercase mb-1">{title}</p>
-      <p className="text-2xl font-bold text-[var(--foreground)] mb-1">{value}</p>
+      <p className="text-xs text-[var(--muted-foreground)] uppercase mb-1">
+        {title}
+      </p>
+      <p className="text-2xl font-bold text-[var(--foreground)] mb-1">
+        {value}
+      </p>
       {change && (
-        <p className={`text-xs ${change.startsWith("+") ? "text-emerald-600" : "text-red-600"}`}>
+        <p
+          className={`text-xs ${
+            change.startsWith("+") ? "text-emerald-600" : "text-red-600"
+          }`}
+        >
           {change}
         </p>
       )}
-      {subtitle && <p className="text-xs text-[var(--muted-foreground)] mt-1">{subtitle}</p>}
+      {subtitle && (
+        <p className="text-xs text-[var(--muted-foreground)] mt-1">
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }
 
-function DataTable({ headers, data }: { headers: string[]; data: (string | React.ReactNode)[][] }) {
+function DataTable({
+  headers,
+  data,
+}: {
+  headers: string[];
+  data: (string | React.ReactNode)[][];
+}) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead className="bg-[var(--muted)]">
           <tr>
             {headers.map((header, i) => (
-              <th key={i} className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase">
+              <th
+                key={i}
+                className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase"
+              >
                 {header}
               </th>
             ))}
@@ -92,7 +160,10 @@ function DataTable({ headers, data }: { headers: string[]; data: (string | React
           {data.map((row, i) => (
             <tr key={i} className="hover:bg-[var(--muted)]">
               {row.map((cell, j) => (
-                <td key={j} className="px-4 py-3 text-sm text-[var(--foreground)]">
+                <td
+                  key={j}
+                  className="px-4 py-3 text-sm text-[var(--foreground)]"
+                >
                   {cell}
                 </td>
               ))}
@@ -104,11 +175,22 @@ function DataTable({ headers, data }: { headers: string[]; data: (string | React
   );
 }
 
-function ProgressBar({ value, max, color = "bg-[var(--primary)]" }: { value: number; max: number; color?: string }) {
+function ProgressBar({
+  value,
+  max,
+  color = "bg-[var(--primary)]",
+}: {
+  value: number;
+  max: number;
+  color?: string;
+}) {
   const percentage = Math.min((value / max) * 100, 100);
   return (
     <div className="h-2 bg-[var(--muted)] rounded-full overflow-hidden">
-      <div className={`h-full ${color} rounded-full`} style={{ width: `${percentage}%` }} />
+      <div
+        className={`h-full ${color} rounded-full`}
+        style={{ width: `${percentage}%` }}
+      />
     </div>
   );
 }
@@ -157,7 +239,16 @@ function OverviewTab() {
   } satisfies ChartConfig;
 
   const expenseData = expenseBreakdown.map((expense, i) => {
-    const keys = ["cogs", "salaries", "rent", "thirdparty", "delivery", "marketing", "gateway", "other"];
+    const keys = [
+      "cogs",
+      "salaries",
+      "rent",
+      "thirdparty",
+      "delivery",
+      "marketing",
+      "gateway",
+      "other",
+    ];
     return {
       name: expense.category,
       value: expense.amount,
@@ -172,17 +263,17 @@ function OverviewTab() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <MetricCard
           title="Total Revenue"
-          value={`₵${(financialOverview.totalRevenue / 1000).toFixed(0)}k`}
+          value={`₵{(financialOverview.totalRevenue / 1000).toFixed(0)}k`}
           change={`+${financialOverview.revenueChange}% ↑`}
         />
         <MetricCard
           title="Total Expenses"
-          value={`₵${(financialOverview.totalExpenses / 1000).toFixed(0)}k`}
+          value={`₵{(financialOverview.totalExpenses / 1000).toFixed(0)}k`}
           change={`+${financialOverview.expensesChange}% ↑`}
         />
         <MetricCard
           title="Net Profit"
-          value={`₵${(financialOverview.netProfit / 1000).toFixed(0)}k`}
+          value={`₵{(financialOverview.netProfit / 1000).toFixed(0)}k`}
           change={`+${financialOverview.profitChange}% ↑`}
         />
         <MetricCard
@@ -192,12 +283,12 @@ function OverviewTab() {
         />
         <MetricCard
           title="Cash Balance"
-          value={`₵${(financialOverview.cashBalance / 1000).toFixed(0)}k`}
+          value={`₵{(financialOverview.cashBalance / 1000).toFixed(0)}k`}
           change={`+${financialOverview.cashChange}% ↑`}
         />
         <MetricCard
           title="Pending Bills"
-          value={`₵${(financialOverview.pendingBills / 1000).toFixed(0)}k`}
+          value={`₵{(financialOverview.pendingBills / 1000).toFixed(0)}k`}
           subtitle={`${financialOverview.pendingBillsCount} bills`}
         />
       </div>
@@ -210,7 +301,9 @@ function OverviewTab() {
           </h3>
           {activeData ? (
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              {activeData.month}: Revenue ₵{(activeData.revenue / 1000).toFixed(0)}k, Expenses ₵{(activeData.expenses / 1000).toFixed(0)}k
+              {activeData.month}: Revenue ₵
+              {(activeData.revenue / 1000).toFixed(0)}k, Expenses ₵
+              {(activeData.expenses / 1000).toFixed(0)}k
             </p>
           ) : (
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
@@ -307,7 +400,10 @@ function OverviewTab() {
         <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
           Expense Categories - January 2026
         </h3>
-        <ChartContainer config={expenseConfig} className="mx-auto aspect-square max-h-[300px]">
+        <ChartContainer
+          config={expenseConfig}
+          className="mx-auto aspect-square max-h-[300px]"
+        >
           <PieChart>
             <ChartTooltip
               content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -336,8 +432,13 @@ function OverviewTab() {
           {expenseBreakdown.map((expense, i) => (
             <div key={i} className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: expenseData[i].fill }} />
-                <span className="text-[var(--foreground)]">{expense.category}</span>
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: expenseData[i].fill }}
+                />
+                <span className="text-[var(--foreground)]">
+                  {expense.category}
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-[var(--muted-foreground)]">
@@ -388,7 +489,9 @@ function OverviewTab() {
           </div>
         </div>
         <div className="mt-4 pt-4 border-t border-emerald-200 dark:border-emerald-800">
-          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100 mb-2">Recommendations:</p>
+          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100 mb-2">
+            Recommendations:
+          </p>
           <ul className="text-sm text-emerald-700 dark:text-emerald-300 space-y-1">
             <li>• Pay overdue bills to avoid penalties</li>
             <li>• Food cost is optimal, maintain current suppliers</li>
@@ -399,7 +502,9 @@ function OverviewTab() {
 
       {/* Quick Actions */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">Quick Actions</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">
+          Quick Actions
+        </h3>
         <div className="flex flex-wrap gap-2">
           <button className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--primary-hover)]">
             + Add Expense
@@ -453,16 +558,23 @@ function IncomeTab() {
     <div className="space-y-6">
       {/* Income Summary */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Income Summary - January 2026</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Income Summary - January 2026
+        </h3>
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-[var(--foreground)]">Revenue from Orders</span>
+              <span className="text-sm font-medium text-[var(--foreground)]">
+                Revenue from Orders
+              </span>
               <span className="text-sm font-medium text-[var(--foreground)]">
                 ₵{(incomeData.revenueFromOrders / 1000).toFixed(0)}k
               </span>
             </div>
-            <ChartContainer config={incomeChannelConfig} className="mx-auto aspect-square max-h-[250px]">
+            <ChartContainer
+              config={incomeChannelConfig}
+              className="mx-auto aspect-square max-h-[250px]"
+            >
               <PieChart>
                 <ChartTooltip
                   content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -489,10 +601,18 @@ function IncomeTab() {
             </ChartContainer>
             <div className="mt-4 space-y-2">
               {incomeData.byChannel.map((channel, i) => (
-                <div key={i} className="flex items-center justify-between text-xs">
+                <div
+                  key={i}
+                  className="flex items-center justify-between text-xs"
+                >
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: incomeChannelData[i].fill }} />
-                    <span className="text-[var(--foreground)]">{channel.channel}</span>
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: incomeChannelData[i].fill }}
+                    />
+                    <span className="text-[var(--foreground)]">
+                      {channel.channel}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-[var(--foreground)]">
@@ -508,15 +628,22 @@ function IncomeTab() {
           </div>
           <div className="pt-3 border-t border-[var(--border)]">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-[var(--foreground)]">Other Income</span>
+              <span className="text-sm font-medium text-[var(--foreground)]">
+                Other Income
+              </span>
               <span className="text-sm font-medium text-[var(--foreground)]">
                 ₵{(incomeData.otherIncome / 1000).toFixed(0)}k
               </span>
             </div>
             <div className="pl-4 space-y-1">
               {incomeData.otherIncomeItems.map((item, i) => (
-                <div key={i} className="flex items-center justify-between text-sm">
-                  <span className="text-[var(--muted-foreground)]">├─ {item.category}</span>
+                <div
+                  key={i}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <span className="text-[var(--muted-foreground)]">
+                    ├─ {item.category}
+                  </span>
                   <span className="text-[var(--foreground)]">
                     ₵{(item.amount / 1000).toFixed(0)}k
                   </span>
@@ -527,7 +654,12 @@ function IncomeTab() {
           <div className="pt-3 border-t-2 border-[var(--border)] flex items-center justify-between font-bold">
             <span className="text-[var(--foreground)]">TOTAL INCOME</span>
             <span className="text-lg text-[var(--foreground)]">
-              ₵{((incomeData.revenueFromOrders + incomeData.otherIncome) / 1000).toFixed(0)}k
+              ₵
+              {(
+                (incomeData.revenueFromOrders + incomeData.otherIncome) /
+                1000
+              ).toFixed(0)}
+              k
             </span>
           </div>
         </div>
@@ -536,7 +668,9 @@ function IncomeTab() {
       {/* Record Other Income */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Record Other Income</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Record Other Income
+          </h3>
           <button
             onClick={() => setShowAddIncome(true)}
             className="px-3 py-1.5 bg-[var(--primary)] text-white rounded-lg text-sm font-medium"
@@ -549,7 +683,7 @@ function IncomeTab() {
           data={incomeData.otherIncomeItems.map((item) => [
             item.date,
             item.category,
-            `₵${(item.amount / 1000).toFixed(0)}k`,
+            `₵{(item.amount / 1000).toFixed(0)}k`,
             item.notes,
           ])}
         />
@@ -558,19 +692,36 @@ function IncomeTab() {
       {/* Add Income Modal */}
       {showAddIncome && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowAddIncome(false)} />
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowAddIncome(false)}
+          />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[var(--card)] rounded-xl shadow-2xl z-50 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">Record Other Income</h3>
-              <button onClick={() => setShowAddIncome(false)} className="text-[var(--muted-foreground)]">✕</button>
+              <h3 className="text-lg font-bold text-[var(--foreground)]">
+                Record Other Income
+              </h3>
+              <button
+                onClick={() => setShowAddIncome(false)}
+                className="text-[var(--muted-foreground)]"
+              >
+                ✕
+              </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Date *</label>
-                <input type="date" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Date *
+                </label>
+                <input
+                  type="date"
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Category *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Category *
+                </label>
                 <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                   <option>Catering</option>
                   <option>Merchandise</option>
@@ -579,21 +730,34 @@ function IncomeTab() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Amount *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Amount *
+                </label>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">₵</span>
-                  <input type="number" placeholder="35000" className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                  <input
+                    type="number"
+                    placeholder="35000"
+                    className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                  />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Payment Method</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Payment Method
+                </label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2">
                     <input type="radio" name="payment" className="w-4 h-4" />
                     <span className="text-sm">Cash</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="payment" defaultChecked className="w-4 h-4" />
+                    <input
+                      type="radio"
+                      name="payment"
+                      defaultChecked
+                      className="w-4 h-4"
+                    />
                     <span className="text-sm">Bank Transfer</span>
                   </label>
                   <label className="flex items-center gap-2">
@@ -603,21 +767,38 @@ function IncomeTab() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Customer/Client (Optional)</label>
-                <input type="text" placeholder="Johnson & Sons Ltd." className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Customer/Client (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Johnson & Sons Ltd."
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Description/Notes</label>
-                <textarea rows={3} placeholder="Wedding catering service - 100 guests" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Description/Notes
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Wedding catering service - 100 guests"
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Attach Invoice/Receipt</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Attach Invoice/Receipt
+                </label>
                 <button className="px-4 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--border)]">
                   📄 Upload File
                 </button>
               </div>
               <div className="flex gap-2 pt-4 border-t border-[var(--border)]">
-                <button onClick={() => setShowAddIncome(false)} className="flex-1 px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+                <button
+                  onClick={() => setShowAddIncome(false)}
+                  className="flex-1 px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium"
+                >
                   Cancel
                 </button>
                 <button className="flex-1 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
@@ -638,9 +819,24 @@ function ExpensesTab() {
   const [showAddExpense, setShowAddExpense] = useState(false);
 
   const cogsEntries = [
-    { date: "Jan 20", supplier: "Fresh Foods Ltd", items: "Rice, Chicken", amount: 245000 },
-    { date: "Jan 18", supplier: "Market Vendors", items: "Vegetables", amount: 85000 },
-    { date: "Jan 15", supplier: "Meat Supplies", items: "Beef, Fish", amount: 180000 },
+    {
+      date: "Jan 20",
+      supplier: "Fresh Foods Ltd",
+      items: "Rice, Chicken",
+      amount: 245000,
+    },
+    {
+      date: "Jan 18",
+      supplier: "Market Vendors",
+      items: "Vegetables",
+      amount: 85000,
+    },
+    {
+      date: "Jan 15",
+      supplier: "Meat Supplies",
+      items: "Beef, Fish",
+      amount: 180000,
+    },
   ];
 
   return (
@@ -682,7 +878,9 @@ function ExpensesTab() {
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">🛒 Cost of Goods Sold</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              🛒 Cost of Goods Sold
+            </h3>
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
               Total This Month: ₵1,356,900 (30% of revenue) ✅ Within range
             </p>
@@ -697,7 +895,7 @@ function ExpensesTab() {
             entry.date,
             entry.supplier,
             entry.items,
-            `₵${(entry.amount / 1000).toFixed(0)}k`,
+            `₵{(entry.amount / 1000).toFixed(0)}k`,
           ])}
         />
       </div>
@@ -706,13 +904,16 @@ function ExpensesTab() {
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">👥 Employee Salaries</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              👥 Employee Salaries
+            </h3>
             <button className="px-3 py-1.5 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
               + Add Payment
             </button>
           </div>
           <p className="text-xs text-[var(--muted-foreground)]">
-            Total This Month: ₵800,000 (17.7% of revenue) ✅ Below target (efficient)
+            Total This Month: ₵800,000 (17.7% of revenue) ✅ Below target
+            (efficient)
           </p>
         </div>
         <DataTable
@@ -729,7 +930,9 @@ function ExpensesTab() {
       {/* Other Expense Categories */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">🏢 Rent & Utilities</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">
+            🏢 Rent & Utilities
+          </h3>
           <p className="text-xs text-[var(--muted-foreground)] mb-3">
             Total: ₵450,000 (9.9% of revenue)
           </p>
@@ -739,7 +942,9 @@ function ExpensesTab() {
               <span className="text-[var(--foreground)]">₵350k ✅</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--muted-foreground)]">Electricity</span>
+              <span className="text-[var(--muted-foreground)]">
+                Electricity
+              </span>
               <span className="text-[var(--foreground)]">₵65k ✅</span>
             </div>
             <div className="flex justify-between">
@@ -750,7 +955,9 @@ function ExpensesTab() {
         </div>
 
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">📱 Third-Party Fees</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">
+            📱 Third-Party Fees
+          </h3>
           <p className="text-xs text-[var(--muted-foreground)] mb-3">
             Total: ₵391,700 (8.7% of revenue) ⚠️ High commission rate
           </p>
@@ -764,7 +971,9 @@ function ExpensesTab() {
               <span className="text-[var(--foreground)]">₵56.5k</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--muted-foreground)]">Platform Delivery</span>
+              <span className="text-[var(--muted-foreground)]">
+                Platform Delivery
+              </span>
               <span className="text-[var(--foreground)]">₵212.7k</span>
             </div>
           </div>
@@ -774,20 +983,37 @@ function ExpensesTab() {
       {/* Add Expense Modal */}
       {showAddExpense && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowAddExpense(false)} />
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowAddExpense(false)}
+          />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[var(--card)] rounded-xl shadow-2xl z-50 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">Add Expense</h3>
-              <button onClick={() => setShowAddExpense(false)} className="text-[var(--muted-foreground)]">✕</button>
+              <h3 className="text-lg font-bold text-[var(--foreground)]">
+                Add Expense
+              </h3>
+              <button
+                onClick={() => setShowAddExpense(false)}
+                className="text-[var(--muted-foreground)]"
+              >
+                ✕
+              </button>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Date *</label>
-                  <input type="date" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Category *</label>
+                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                    Category *
+                  </label>
                   <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                     <option>Cost of Goods Sold</option>
                     <option>Salaries</option>
@@ -801,45 +1027,83 @@ function ExpensesTab() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Amount *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Amount *
+                </label>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">₵</span>
-                  <input type="number" placeholder="15000" className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                  <input
+                    type="number"
+                    placeholder="15000"
+                    className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                  />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Vendor/Supplier</label>
-                <input type="text" placeholder="Kitchen Supplies Ltd." className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Vendor/Supplier
+                </label>
+                <input
+                  type="text"
+                  placeholder="Kitchen Supplies Ltd."
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Payment Method *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Payment Method *
+                </label>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="expensePayment" defaultChecked className="w-4 h-4" />
+                    <input
+                      type="radio"
+                      name="expensePayment"
+                      defaultChecked
+                      className="w-4 h-4"
+                    />
                     <span className="text-sm">Cash</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="expensePayment" className="w-4 h-4" />
+                    <input
+                      type="radio"
+                      name="expensePayment"
+                      className="w-4 h-4"
+                    />
                     <span className="text-sm">Bank Transfer</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="expensePayment" className="w-4 h-4" />
+                    <input
+                      type="radio"
+                      name="expensePayment"
+                      className="w-4 h-4"
+                    />
                     <span className="text-sm">Mobile Money</span>
                   </label>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Description *</label>
-                <textarea rows={3} placeholder="Commercial blender for smoothies" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Description *
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Commercial blender for smoothies"
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Attach Receipt/Invoice</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Attach Receipt/Invoice
+                </label>
                 <button className="px-4 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--border)]">
                   📄 Upload File
                 </button>
               </div>
               <div className="flex gap-2 pt-4 border-t border-[var(--border)]">
-                <button onClick={() => setShowAddExpense(false)} className="flex-1 px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+                <button
+                  onClick={() => setShowAddExpense(false)}
+                  className="flex-1 px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium"
+                >
                   Cancel
                 </button>
                 <button className="flex-1 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
@@ -864,7 +1128,9 @@ function InvoicesTab() {
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">📋 Unpaid Bills</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              📋 Unpaid Bills
+            </h3>
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
               Total Outstanding: ₵245,000 ⚠️ 3 bills due this week
             </p>
@@ -880,12 +1146,19 @@ function InvoicesTab() {
           headers={["Vendor", "Amount", "Due Date", "Days", "Priority"]}
           data={unpaidBills.map((bill) => [
             bill.vendor,
-            `₵${(bill.amount / 1000).toFixed(0)}k`,
+            `₵{(bill.amount / 1000).toFixed(0)}k`,
             bill.dueDate,
-            <span key={bill.dueDate} className={bill.days === "OVERDUE" ? "text-red-600" : ""}>
+            <span
+              key={bill.dueDate}
+              className={bill.days === "OVERDUE" ? "text-red-600" : ""}
+            >
               {bill.days}
             </span>,
-            bill.priority === "high" ? "🔴 High" : bill.priority === "medium" ? "🟡 Med" : "🟢 Low",
+            bill.priority === "high"
+              ? "🔴 High"
+              : bill.priority === "medium"
+              ? "🟡 Med"
+              : "🟢 Low",
           ])}
         />
       </div>
@@ -893,7 +1166,9 @@ function InvoicesTab() {
       {/* Paid Bills History */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">📋 Paid Bills</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">
+            📋 Paid Bills
+          </h3>
           <div className="flex gap-4">
             <select className="px-3 py-1.5 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
               <option>Last 30 days</option>
@@ -925,43 +1200,85 @@ function InvoicesTab() {
       {/* Add Bill Modal */}
       {showAddBill && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowAddBill(false)} />
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowAddBill(false)}
+          />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[var(--card)] rounded-xl shadow-2xl z-50 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">Add Bill/Invoice</h3>
-              <button onClick={() => setShowAddBill(false)} className="text-[var(--muted-foreground)]">✕</button>
+              <h3 className="text-lg font-bold text-[var(--foreground)]">
+                Add Bill/Invoice
+              </h3>
+              <button
+                onClick={() => setShowAddBill(false)}
+                className="text-[var(--muted-foreground)]"
+              >
+                ✕
+              </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Vendor/Supplier *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Vendor/Supplier *
+                </label>
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Select or add new..." className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
-                  <button className="px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">New</button>
+                  <input
+                    type="text"
+                    placeholder="Select or add new..."
+                    className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                  />
+                  <button className="px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
+                    New
+                  </button>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Bill/Invoice Number</label>
-                <input type="text" placeholder="INV-2026-0156" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Bill/Invoice Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="INV-2026-0156"
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Bill Date *</label>
-                  <input type="date" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                    Bill Date *
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Due Date *</label>
-                  <input type="date" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                  <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                    Due Date *
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                  />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Amount *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Amount *
+                </label>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">₵</span>
-                  <input type="number" placeholder="156000" className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                  <input
+                    type="number"
+                    placeholder="156000"
+                    className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                  />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Category *</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Category *
+                </label>
                 <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                   <option>Cost of Goods Sold</option>
                   <option>Rent & Utilities</option>
@@ -970,17 +1287,28 @@ function InvoicesTab() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Description</label>
-                <textarea rows={2} placeholder="Rice and chicken supplies - bulk order" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Description
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Rice and chicken supplies - bulk order"
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Attach Invoice</label>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Attach Invoice
+                </label>
                 <button className="px-4 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--border)]">
                   📄 Upload
                 </button>
               </div>
               <div className="flex gap-2 pt-4 border-t border-[var(--border)]">
-                <button onClick={() => setShowAddBill(false)} className="flex-1 px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+                <button
+                  onClick={() => setShowAddBill(false)}
+                  className="flex-1 px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium"
+                >
                   Cancel
                 </button>
                 <button className="flex-1 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
@@ -1009,7 +1337,9 @@ function ProfitLossTab() {
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
         <div className="flex items-center gap-4">
           <div>
-            <label className="block text-xs text-[var(--muted-foreground)] mb-1">Period</label>
+            <label className="block text-xs text-[var(--muted-foreground)] mb-1">
+              Period
+            </label>
             <select className="px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
               <option>January 2026</option>
               <option>December 2025</option>
@@ -1017,7 +1347,9 @@ function ProfitLossTab() {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-[var(--muted-foreground)] mb-1">Compare to</label>
+            <label className="block text-xs text-[var(--muted-foreground)] mb-1">
+              Compare to
+            </label>
             <select className="px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
               <option>December 2025</option>
               <option>January 2025</option>
@@ -1025,68 +1357,100 @@ function ProfitLossTab() {
           </div>
           <div className="flex-1" />
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">Generate Report</button>
-            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">Export PDF</button>
-            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">Export Excel</button>
+            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+              Generate Report
+            </button>
+            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+              Export PDF
+            </button>
+            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+              Export Excel
+            </button>
           </div>
         </div>
       </div>
 
       {/* P&L Statement */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Profit & Loss Statement</h3>
-        
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Profit & Loss Statement
+        </h3>
+
         {/* Revenue */}
         <div className="space-y-2 mb-4">
           <div className="font-medium text-[var(--foreground)]">REVENUE</div>
           <div className="pl-4 space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Sales Revenue</span>
-              <span className="text-[var(--foreground)]">₵{(revenue / 1000).toFixed(0)}k</span>
+              <span className="text-[var(--muted-foreground)]">
+                Sales Revenue
+              </span>
+              <span className="text-[var(--foreground)]">
+                ₵{(revenue / 1000).toFixed(0)}k
+              </span>
             </div>
             <div className="pl-4 space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Phone Orders</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Phone Orders
+                </span>
                 <span className="text-[var(--foreground)]">₵1,244k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Website Orders</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Website Orders
+                </span>
                 <span className="text-[var(--foreground)]">₵1,860k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Social Media</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Social Media
+                </span>
                 <span className="text-[var(--foreground)]">₵702k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Bolt Food</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Bolt Food
+                </span>
                 <span className="text-[var(--foreground)]">₵490k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">└─ Chowdeck</span>
+                <span className="text-[var(--muted-foreground)]">
+                  └─ Chowdeck
+                </span>
                 <span className="text-[var(--foreground)]">₵226k</span>
               </div>
             </div>
             <div className="flex justify-between text-sm pt-2 border-t border-[var(--border)]">
-              <span className="text-[var(--muted-foreground)]">Other Income</span>
+              <span className="text-[var(--muted-foreground)]">
+                Other Income
+              </span>
               <span className="text-[var(--foreground)]">₵50k</span>
             </div>
             <div className="flex justify-between font-bold text-lg pt-2 border-t-2 border-[var(--border)]">
               <span className="text-[var(--foreground)]">TOTAL REVENUE</span>
-              <span className="text-emerald-600">₵{(revenue / 1000).toFixed(0)}k</span>
+              <span className="text-emerald-600">
+                ₵{(revenue / 1000).toFixed(0)}k
+              </span>
             </div>
           </div>
         </div>
 
         {/* COGS */}
         <div className="space-y-2 mb-4 pt-4 border-t border-[var(--border)]">
-          <div className="font-medium text-[var(--foreground)]">COST OF GOODS SOLD (COGS)</div>
+          <div className="font-medium text-[var(--foreground)]">
+            COST OF GOODS SOLD (COGS)
+          </div>
           <div className="pl-4 space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Food & Ingredients</span>
+              <span className="text-[var(--muted-foreground)]">
+                Food & Ingredients
+              </span>
               <span className="text-[var(--foreground)]">₵1,356k</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Packaging Materials</span>
+              <span className="text-[var(--muted-foreground)]">
+                Packaging Materials
+              </span>
               <span className="text-[var(--foreground)]">₵45k</span>
             </div>
             <div className="flex justify-between font-medium pt-2 border-t border-[var(--border)]">
@@ -1095,17 +1459,23 @@ function ProfitLossTab() {
             </div>
             <div className="flex justify-between font-bold text-lg pt-2 border-t-2 border-[var(--border)]">
               <span className="text-[var(--foreground)]">GROSS PROFIT</span>
-              <span className="text-emerald-600">₵{(grossProfit / 1000).toFixed(0)}k (69.3% margin)</span>
+              <span className="text-emerald-600">
+                ₵{(grossProfit / 1000).toFixed(0)}k (69.3% margin)
+              </span>
             </div>
           </div>
         </div>
 
         {/* Operating Expenses */}
         <div className="space-y-2 mb-4 pt-4 border-t border-[var(--border)]">
-          <div className="font-medium text-[var(--foreground)]">OPERATING EXPENSES</div>
+          <div className="font-medium text-[var(--foreground)]">
+            OPERATING EXPENSES
+          </div>
           <div className="pl-4 space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Employee Salaries & Benefits</span>
+              <span className="text-[var(--muted-foreground)]">
+                Employee Salaries & Benefits
+              </span>
               <span className="text-[var(--foreground)]">₵800k</span>
             </div>
             <div className="flex justify-between text-sm">
@@ -1117,47 +1487,73 @@ function ProfitLossTab() {
               <span className="text-[var(--foreground)]">₵100k</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Third-Party Platform Fees</span>
+              <span className="text-[var(--muted-foreground)]">
+                Third-Party Platform Fees
+              </span>
               <span className="text-[var(--foreground)]">₵391k</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Delivery Costs</span>
+              <span className="text-[var(--muted-foreground)]">
+                Delivery Costs
+              </span>
               <span className="text-[var(--foreground)]">₵285k</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Marketing & Advertising</span>
+              <span className="text-[var(--muted-foreground)]">
+                Marketing & Advertising
+              </span>
               <span className="text-[var(--foreground)]">₵120k</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Payment Gateway Fees</span>
+              <span className="text-[var(--muted-foreground)]">
+                Payment Gateway Fees
+              </span>
               <span className="text-[var(--foreground)]">₵113k</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Other Operating Expenses</span>
+              <span className="text-[var(--muted-foreground)]">
+                Other Operating Expenses
+              </span>
               <span className="text-[var(--foreground)]">₵50k</span>
             </div>
             <div className="flex justify-between font-medium pt-2 border-t border-[var(--border)]">
-              <span className="text-[var(--foreground)]">TOTAL OPERATING EXPENSES</span>
-              <span className="text-red-600">₵{(operatingExpenses / 1000).toFixed(0)}k</span>
+              <span className="text-[var(--foreground)]">
+                TOTAL OPERATING EXPENSES
+              </span>
+              <span className="text-red-600">
+                ₵{(operatingExpenses / 1000).toFixed(0)}k
+              </span>
             </div>
           </div>
         </div>
 
         {/* Net Profit */}
         <div className="space-y-2 pt-4 border-t-2 border-[var(--border)]">
-          <div className="font-medium text-[var(--foreground)]">NET PROFIT (EBITDA)</div>
+          <div className="font-medium text-[var(--foreground)]">
+            NET PROFIT (EBITDA)
+          </div>
           <div className="pl-4 space-y-1">
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Gross Profit</span>
-              <span className="text-[var(--foreground)]">₵{(grossProfit / 1000).toFixed(0)}k</span>
+              <span className="text-[var(--muted-foreground)]">
+                Gross Profit
+              </span>
+              <span className="text-[var(--foreground)]">
+                ₵{(grossProfit / 1000).toFixed(0)}k
+              </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Less: Operating Expenses</span>
-              <span className="text-red-600">-₵{(operatingExpenses / 1000).toFixed(0)}k</span>
+              <span className="text-[var(--muted-foreground)]">
+                Less: Operating Expenses
+              </span>
+              <span className="text-red-600">
+                -₵{(operatingExpenses / 1000).toFixed(0)}k
+              </span>
             </div>
             <div className="flex justify-between font-bold text-xl pt-2 border-t-2 border-[var(--border)]">
               <span className="text-[var(--foreground)]">NET PROFIT</span>
-              <span className="text-emerald-600">₵{(netProfit / 1000).toFixed(0)}k (21.0% margin) 🎉</span>
+              <span className="text-emerald-600">
+                ₵{(netProfit / 1000).toFixed(0)}k (21.0% margin) 🎉
+              </span>
             </div>
           </div>
         </div>
@@ -1165,25 +1561,35 @@ function ProfitLossTab() {
 
       {/* Key Metrics */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">KEY METRICS</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          KEY METRICS
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <p className="text-xs text-[var(--muted-foreground)] mb-1">Gross Profit Margin</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-1">
+              Gross Profit Margin
+            </p>
             <p className="text-lg font-bold text-emerald-600">69.3% ✅</p>
             <p className="text-xs text-[var(--muted-foreground)]">Excellent</p>
           </div>
           <div>
-            <p className="text-xs text-[var(--muted-foreground)] mb-1">Net Profit Margin</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-1">
+              Net Profit Margin
+            </p>
             <p className="text-lg font-bold text-emerald-600">21.0% ✅</p>
             <p className="text-xs text-[var(--muted-foreground)]">Good</p>
           </div>
           <div>
-            <p className="text-xs text-[var(--muted-foreground)] mb-1">Food Cost %</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-1">
+              Food Cost %
+            </p>
             <p className="text-lg font-bold text-emerald-600">30.7% ✅</p>
             <p className="text-xs text-[var(--muted-foreground)]">Optimal</p>
           </div>
           <div>
-            <p className="text-xs text-[var(--muted-foreground)] mb-1">Labor Cost %</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-1">
+              Labor Cost %
+            </p>
             <p className="text-lg font-bold text-emerald-600">17.5% ✅</p>
             <p className="text-xs text-[var(--muted-foreground)]">Efficient</p>
           </div>
@@ -1206,95 +1612,143 @@ function CashFlowTab() {
     <div className="space-y-6">
       {/* Cash Flow Statement */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Cash Flow Statement - January 2026</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Cash Flow Statement - January 2026
+        </h3>
         <div className="space-y-4">
           <div className="flex justify-between text-sm">
-            <span className="text-[var(--muted-foreground)]">Opening Balance (Jan 1, 2026)</span>
-            <span className="text-[var(--foreground)] font-medium">₵{(openingBalance / 1000).toFixed(0)}k</span>
+            <span className="text-[var(--muted-foreground)]">
+              Opening Balance (Jan 1, 2026)
+            </span>
+            <span className="text-[var(--foreground)] font-medium">
+              ₵{(openingBalance / 1000).toFixed(0)}k
+            </span>
           </div>
 
           <div className="pt-4 border-t border-[var(--border)]">
-            <div className="font-medium text-[var(--foreground)] mb-2">CASH INFLOWS</div>
+            <div className="font-medium text-[var(--foreground)] mb-2">
+              CASH INFLOWS
+            </div>
             <div className="pl-4 space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Cash from Orders</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Cash from Orders
+                </span>
                 <span className="text-[var(--foreground)]">₵232k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Mobile Money Received</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Mobile Money Received
+                </span>
                 <span className="text-[var(--foreground)]">₵2,713k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Card Payments Received</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Card Payments Received
+                </span>
                 <span className="text-[var(--foreground)]">₵1,564k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Other Income</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Other Income
+                </span>
                 <span className="text-[var(--foreground)]">₵50k</span>
               </div>
               <div className="flex justify-between font-medium pt-2 border-t border-[var(--border)]">
                 <span className="text-[var(--foreground)]">Total Inflows</span>
-                <span className="text-emerald-600">₵{(totalInflows / 1000).toFixed(0)}k</span>
+                <span className="text-emerald-600">
+                  ₵{(totalInflows / 1000).toFixed(0)}k
+                </span>
               </div>
             </div>
           </div>
 
           <div className="pt-4 border-t border-[var(--border)]">
-            <div className="font-medium text-[var(--foreground)] mb-2">CASH OUTFLOWS</div>
+            <div className="font-medium text-[var(--foreground)] mb-2">
+              CASH OUTFLOWS
+            </div>
             <div className="pl-4 space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Supplier Payments (COGS)</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Supplier Payments (COGS)
+                </span>
                 <span className="text-[var(--foreground)]">₵1,356k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Salaries Paid</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Salaries Paid
+                </span>
                 <span className="text-[var(--foreground)]">₵755k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Rent Paid</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Rent Paid
+                </span>
                 <span className="text-[var(--foreground)]">₵350k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Utilities Paid</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Utilities Paid
+                </span>
                 <span className="text-[var(--foreground)]">₵100k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Delivery Costs</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Delivery Costs
+                </span>
                 <span className="text-[var(--foreground)]">₵110k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Marketing Paid</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Marketing Paid
+                </span>
                 <span className="text-[var(--foreground)]">₵120k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Other Expenses</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Other Expenses
+                </span>
                 <span className="text-[var(--foreground)]">₵50k</span>
               </div>
               <div className="flex justify-between font-medium pt-2 border-t border-[var(--border)]">
                 <span className="text-[var(--foreground)]">Total Outflows</span>
-                <span className="text-red-600">₵{(totalOutflows / 1000).toFixed(0)}k</span>
+                <span className="text-red-600">
+                  ₵{(totalOutflows / 1000).toFixed(0)}k
+                </span>
               </div>
             </div>
           </div>
 
           <div className="pt-4 border-t border-[var(--border)]">
-            <div className="font-medium text-[var(--foreground)] mb-2">Auto-Deductions</div>
+            <div className="font-medium text-[var(--foreground)] mb-2">
+              Auto-Deductions
+            </div>
             <div className="pl-4 space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Platform Fees</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Platform Fees
+                </span>
                 <span className="text-[var(--foreground)]">₵391k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Payment Gateway Fees</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Payment Gateway Fees
+                </span>
                 <span className="text-[var(--foreground)]">₵113k</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[var(--muted-foreground)]">├─ Yango Delivery</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ├─ Yango Delivery
+                </span>
                 <span className="text-[var(--foreground)]">₵175k</span>
               </div>
               <div className="flex justify-between font-medium pt-2 border-t border-[var(--border)]">
-                <span className="text-[var(--foreground)]">Total Auto-Deductions</span>
-                <span className="text-red-600">₵{(autoDeductions / 1000).toFixed(0)}k</span>
+                <span className="text-[var(--foreground)]">
+                  Total Auto-Deductions
+                </span>
+                <span className="text-red-600">
+                  ₵{(autoDeductions / 1000).toFixed(0)}k
+                </span>
               </div>
             </div>
           </div>
@@ -1302,11 +1756,17 @@ function CashFlowTab() {
           <div className="pt-4 border-t-2 border-[var(--border)]">
             <div className="flex justify-between font-bold text-lg">
               <span className="text-[var(--foreground)]">NET CASH FLOW</span>
-              <span className="text-emerald-600">₵{(netCashFlow / 1000).toFixed(0)}k</span>
+              <span className="text-emerald-600">
+                ₵{(netCashFlow / 1000).toFixed(0)}k
+              </span>
             </div>
             <div className="flex justify-between font-bold text-xl pt-2 border-t border-[var(--border)]">
-              <span className="text-[var(--foreground)]">Closing Balance (Jan 31, 2026)</span>
-              <span className="text-emerald-600">₵{(closingBalance / 1000).toFixed(0)}k (+34.6% ↑)</span>
+              <span className="text-[var(--foreground)]">
+                Closing Balance (Jan 31, 2026)
+              </span>
+              <span className="text-emerald-600">
+                ₵{(closingBalance / 1000).toFixed(0)}k (+34.6% ↑)
+              </span>
             </div>
           </div>
         </div>
@@ -1314,7 +1774,9 @@ function CashFlowTab() {
 
       {/* Cash Flow Forecast */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Cash Flow Forecast (Next 3 Months)</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Cash Flow Forecast (Next 3 Months)
+        </h3>
         <DataTable
           headers={["Month", "Projected In", "Projected Out", "Net", "Balance"]}
           data={[
@@ -1324,7 +1786,9 @@ function CashFlowTab() {
           ]}
         />
         <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
-          <p className="text-xs text-amber-700 dark:text-amber-300 mb-2">⚠️ Upcoming Large Expenses:</p>
+          <p className="text-xs text-amber-700 dark:text-amber-300 mb-2">
+            ⚠️ Upcoming Large Expenses:
+          </p>
           <ul className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
             <li>• Feb 1: Bulk supplier payment (₵500k)</li>
             <li>• Mar 15: Equipment purchase (₵300k)</li>
@@ -1342,7 +1806,9 @@ function BankAccountsTab() {
       {/* Connected Accounts */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Bank Accounts</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Bank Accounts
+          </h3>
           <button className="px-3 py-1.5 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
             + Add Account
           </button>
@@ -1351,10 +1817,16 @@ function BankAccountsTab() {
           <div className="p-4 bg-[var(--muted)] rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <p className="font-medium text-[var(--foreground)]">First Bank - Business Account</p>
-                <p className="text-sm text-[var(--muted-foreground)]">Account: 0123456789</p>
+                <p className="font-medium text-[var(--foreground)]">
+                  First Bank - Business Account
+                </p>
+                <p className="text-sm text-[var(--muted-foreground)]">
+                  Account: 0123456789
+                </p>
               </div>
-              <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded">✅ Connected</span>
+              <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded">
+                ✅ Connected
+              </span>
             </div>
             <p className="text-sm text-[var(--foreground)] mb-3">
               Balance: <strong>₵3,856,400</strong> (as of Jan 31, 2026)
@@ -1372,8 +1844,12 @@ function BankAccountsTab() {
           <div className="p-4 bg-[var(--muted)] rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <p className="font-medium text-[var(--foreground)]">Cash on Hand</p>
-                <p className="text-sm text-[var(--muted-foreground)]">Location: Register/Till</p>
+                <p className="font-medium text-[var(--foreground)]">
+                  Cash on Hand
+                </p>
+                <p className="text-sm text-[var(--muted-foreground)]">
+                  Location: Register/Till
+                </p>
               </div>
             </div>
             <p className="text-sm text-[var(--foreground)] mb-3">
@@ -1402,14 +1878,20 @@ function BankAccountsTab() {
 
       {/* Bank Reconciliation */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Bank Reconciliation - First Bank</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Bank Reconciliation - First Bank
+        </h3>
         <div className="space-y-3 mb-4">
           <div className="flex justify-between text-sm">
-            <span className="text-[var(--muted-foreground)]">System Balance:</span>
+            <span className="text-[var(--muted-foreground)]">
+              System Balance:
+            </span>
             <span className="text-[var(--foreground)]">₵3,856,400</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-[var(--muted-foreground)]">Bank Statement Balance:</span>
+            <span className="text-[var(--muted-foreground)]">
+              Bank Statement Balance:
+            </span>
             <span className="text-[var(--foreground)]">₵3,840,200</span>
           </div>
           <div className="flex justify-between text-sm font-medium pt-2 border-t border-[var(--border)]">
@@ -1418,9 +1900,15 @@ function BankAccountsTab() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm">Mark as Reconciled</button>
-          <button className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm">Add Adjustment</button>
-          <button className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm">Generate Report</button>
+          <button className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm">
+            Mark as Reconciled
+          </button>
+          <button className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm">
+            Add Adjustment
+          </button>
+          <button className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm">
+            Generate Report
+          </button>
         </div>
       </div>
     </div>
@@ -1432,25 +1920,68 @@ function FinancialReportsTab() {
   return (
     <div className="space-y-6">
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Financial Reports</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Financial Reports
+        </h3>
         <div className="space-y-4">
           <div>
-            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">Standard Reports:</h4>
+            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">
+              Standard Reports:
+            </h4>
             <div className="space-y-3">
               {[
-                { name: "Profit & Loss Statement", period: "This Month", format: "PDF" },
-                { name: "Balance Sheet", period: "Jan 31, 2026", format: "PDF" },
-                { name: "Cash Flow Statement", period: "This Month", format: "PDF" },
-                { name: "Expense Report by Category", period: "This Month", format: "Excel" },
-                { name: "Revenue Report by Channel", period: "This Quarter", format: "Excel" },
-                { name: "Payroll Summary", period: "This Month", format: "PDF" },
-                { name: "Tax Report (VAT & Income)", period: "Q4 2025", format: "PDF" },
-                { name: "Vendor Payment History", period: "This Year", format: "Excel" },
+                {
+                  name: "Profit & Loss Statement",
+                  period: "This Month",
+                  format: "PDF",
+                },
+                {
+                  name: "Balance Sheet",
+                  period: "Jan 31, 2026",
+                  format: "PDF",
+                },
+                {
+                  name: "Cash Flow Statement",
+                  period: "This Month",
+                  format: "PDF",
+                },
+                {
+                  name: "Expense Report by Category",
+                  period: "This Month",
+                  format: "Excel",
+                },
+                {
+                  name: "Revenue Report by Channel",
+                  period: "This Quarter",
+                  format: "Excel",
+                },
+                {
+                  name: "Payroll Summary",
+                  period: "This Month",
+                  format: "PDF",
+                },
+                {
+                  name: "Tax Report (VAT & Income)",
+                  period: "Q4 2025",
+                  format: "PDF",
+                },
+                {
+                  name: "Vendor Payment History",
+                  period: "This Year",
+                  format: "Excel",
+                },
               ].map((report, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-[var(--muted)] rounded-lg">
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-3 bg-[var(--muted)] rounded-lg"
+                >
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-[var(--foreground)]">{report.name}</p>
-                    <p className="text-xs text-[var(--muted-foreground)]">Period: {report.period}</p>
+                    <p className="text-sm font-medium text-[var(--foreground)]">
+                      {report.name}
+                    </p>
+                    <p className="text-xs text-[var(--muted-foreground)]">
+                      Period: {report.period}
+                    </p>
                   </div>
                   <button className="px-3 py-1.5 bg-[var(--primary)] text-white rounded-lg text-sm">
                     Generate {report.format}
@@ -1476,11 +2007,15 @@ function FinancialSettingsTab() {
     <div className="space-y-6">
       {/* Accounting Preferences */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Accounting Settings</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Accounting Settings
+        </h3>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Fiscal Year Start</label>
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                Fiscal Year Start
+              </label>
               <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                 <option>January</option>
                 <option>April</option>
@@ -1489,7 +2024,9 @@ function FinancialSettingsTab() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Fiscal Year End</label>
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                Fiscal Year End
+              </label>
               <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                 <option>December</option>
                 <option>March</option>
@@ -1499,21 +2036,38 @@ function FinancialSettingsTab() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Accounting Method</label>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+              Accounting Method
+            </label>
             <div className="space-y-2">
               <label className="flex items-center gap-2">
-                <input type="radio" name="accountingMethod" defaultChecked className="w-4 h-4" />
-                <span className="text-sm">Cash Basis (record when money received/paid)</span>
+                <input
+                  type="radio"
+                  name="accountingMethod"
+                  defaultChecked
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">
+                  Cash Basis (record when money received/paid)
+                </span>
               </label>
               <label className="flex items-center gap-2">
-                <input type="radio" name="accountingMethod" className="w-4 h-4" />
-                <span className="text-sm">Accrual Basis (record when earned/incurred)</span>
+                <input
+                  type="radio"
+                  name="accountingMethod"
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">
+                  Accrual Basis (record when earned/incurred)
+                </span>
               </label>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Currency</label>
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                Currency
+              </label>
               <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                 <option>GHS - Ghanaian Cedis (₵)</option>
                 <option>USD - US Dollar ($)</option>
@@ -1521,25 +2075,50 @@ function FinancialSettingsTab() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Decimal Places</label>
-              <input type="number" defaultValue={2} className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                Decimal Places
+              </label>
+              <input
+                type="number"
+                defaultValue={2}
+                className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+              />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Default Payment Terms</label>
-            <input type="text" defaultValue="Net 15 days" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+              Default Payment Terms
+            </label>
+            <input
+              type="text"
+              defaultValue="Net 15 days"
+              className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">VAT Rate</label>
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                VAT Rate
+              </label>
               <div className="flex items-center gap-2">
-                <input type="number" defaultValue={7.5} step={0.1} className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <input
+                  type="number"
+                  defaultValue={7.5}
+                  step={0.1}
+                  className="flex-1 px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
                 <span className="text-sm">%</span>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Tax ID</label>
-              <input type="text" defaultValue="12345678-0001" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+              <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                Tax ID
+              </label>
+              <input
+                type="text"
+                defaultValue="12345678-0001"
+                className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+              />
             </div>
           </div>
           <button className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
@@ -1551,7 +2130,9 @@ function FinancialSettingsTab() {
       {/* Expense Categories */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Expense Categories</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Expense Categories
+          </h3>
           <button className="px-3 py-1.5 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
             + Add Category
           </button>
@@ -1572,45 +2153,82 @@ function FinancialSettingsTab() {
 
       {/* Accountant Access */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Accountant Access</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Accountant Access
+        </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Accountant Email</label>
-            <input type="email" placeholder="accountant@firm.com" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+              Accountant Email
+            </label>
+            <input
+              type="email"
+              placeholder="accountant@firm.com"
+              className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+            />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Access Level</label>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+              Access Level
+            </label>
             <div className="space-y-2">
               <label className="flex items-center gap-2">
-                <input type="radio" name="accessLevel" defaultChecked className="w-4 h-4" />
-                <span className="text-sm">Read-only (can view, cannot edit)</span>
+                <input
+                  type="radio"
+                  name="accessLevel"
+                  defaultChecked
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">
+                  Read-only (can view, cannot edit)
+                </span>
               </label>
               <label className="flex items-center gap-2">
                 <input type="radio" name="accessLevel" className="w-4 h-4" />
-                <span className="text-sm">Full access (can edit transactions)</span>
+                <span className="text-sm">
+                  Full access (can edit transactions)
+                </span>
               </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Auto-send reports:</label>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+              Auto-send reports:
+            </label>
             <div className="space-y-2">
               <label className="flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="w-4 h-4 rounded"
+                />
                 <span className="text-sm">Monthly P&L statement</span>
               </label>
               <label className="flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="w-4 h-4 rounded"
+                />
                 <span className="text-sm">Expense reports</span>
               </label>
               <label className="flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="w-4 h-4 rounded"
+                />
                 <span className="text-sm">Tax reports (quarterly)</span>
               </label>
             </div>
           </div>
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">Export to QuickBooks</button>
-            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">Export to Xero</button>
+            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+              Export to QuickBooks
+            </button>
+            <button className="px-4 py-2 bg-[var(--muted)] rounded-lg text-sm font-medium">
+              Export to Xero
+            </button>
           </div>
           <button className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
             Invite Accountant
@@ -1638,16 +2256,26 @@ export default function FinancialsPage() {
 
   const renderTab = () => {
     switch (activeTab) {
-      case "overview": return <OverviewTab />;
-      case "income": return <IncomeTab />;
-      case "expenses": return <ExpensesTab />;
-      case "invoices": return <InvoicesTab />;
-      case "pl": return <ProfitLossTab />;
-      case "cashflow": return <CashFlowTab />;
-      case "bank": return <BankAccountsTab />;
-      case "reports": return <FinancialReportsTab />;
-      case "settings": return <FinancialSettingsTab />;
-      default: return <OverviewTab />;
+      case "overview":
+        return <OverviewTab />;
+      case "income":
+        return <IncomeTab />;
+      case "expenses":
+        return <ExpensesTab />;
+      case "invoices":
+        return <InvoicesTab />;
+      case "pl":
+        return <ProfitLossTab />;
+      case "cashflow":
+        return <CashFlowTab />;
+      case "bank":
+        return <BankAccountsTab />;
+      case "reports":
+        return <FinancialReportsTab />;
+      case "settings":
+        return <FinancialSettingsTab />;
+      default:
+        return <OverviewTab />;
     }
   };
 
@@ -1655,8 +2283,12 @@ export default function FinancialsPage() {
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">💰 Financials</h1>
-        <p className="text-[var(--muted-foreground)]">Complete financial management and accounting</p>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">
+          💰 Financials
+        </h1>
+        <p className="text-[var(--muted-foreground)]">
+          Complete financial management and accounting
+        </p>
       </div>
 
       {/* Navigation Tabs */}
@@ -1684,4 +2316,3 @@ export default function FinancialsPage() {
     </div>
   );
 }
-

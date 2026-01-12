@@ -10,7 +10,15 @@ import {
 } from "@/components/ui/chart";
 
 // Tab types
-type ReportTab = "sales" | "financial" | "orders" | "customers" | "menu" | "delivery" | "trends" | "custom";
+type ReportTab =
+  | "sales"
+  | "financial"
+  | "orders"
+  | "customers"
+  | "menu"
+  | "delivery"
+  | "trends"
+  | "custom";
 
 // Mock data
 const salesData = {
@@ -22,11 +30,41 @@ const salesData = {
   vsLastOrders: 102,
   vsLastAov: 3.2,
   byChannel: [
-    { channel: "Phone", orders: 245, revenue: 12450, avgOrder: 50.82, percentage: 27.5 },
-    { channel: "Website", orders: 310, revenue: 18600, avgOrder: 60.0, percentage: 41.1 },
-    { channel: "Social Media", orders: 156, revenue: 7020, avgOrder: 45.0, percentage: 15.5 },
-    { channel: "Bolt Food", orders: 98, revenue: 4900, avgOrder: 50.0, percentage: 10.8 },
-    { channel: "Chowdeck", orders: 47, revenue: 2260, avgOrder: 48.09, percentage: 5.0 },
+    {
+      channel: "Phone",
+      orders: 245,
+      revenue: 12450,
+      avgOrder: 50.82,
+      percentage: 27.5,
+    },
+    {
+      channel: "Website",
+      orders: 310,
+      revenue: 18600,
+      avgOrder: 60.0,
+      percentage: 41.1,
+    },
+    {
+      channel: "Social Media",
+      orders: 156,
+      revenue: 7020,
+      avgOrder: 45.0,
+      percentage: 15.5,
+    },
+    {
+      channel: "Bolt Food",
+      orders: 98,
+      revenue: 4900,
+      avgOrder: 50.0,
+      percentage: 10.8,
+    },
+    {
+      channel: "Chowdeck",
+      orders: 47,
+      revenue: 2260,
+      avgOrder: 48.09,
+      percentage: 5.0,
+    },
   ],
   byPayment: [
     { method: "Mobile Money", orders: 512, revenue: 27138, percentage: 60.0 },
@@ -34,17 +72,65 @@ const salesData = {
     { method: "Cash", orders: 46, revenue: 2323, percentage: 5.1 },
   ],
   dailyPerformance: [
-    { date: "Jan 1 (Wed)", orders: 28, revenue: 1456, avgOrder: 52.0, change: 5.2 },
-    { date: "Jan 2 (Thu)", orders: 32, revenue: 1680, avgOrder: 52.5, change: 15.4 },
-    { date: "Jan 3 (Fri)", orders: 45, revenue: 2475, avgOrder: 55.0, change: 47.3 },
-    { date: "Jan 4 (Sat)", orders: 52, revenue: 2860, avgOrder: 55.0, change: 15.6 },
-    { date: "Jan 5 (Sun)", orders: 38, revenue: 1976, avgOrder: 52.0, change: -30.9 },
-    { date: "Jan 6 (Mon)", orders: 25, revenue: 1300, avgOrder: 52.0, change: -34.2 },
-    { date: "Jan 7 (Tue)", orders: 30, revenue: 1590, avgOrder: 53.0, change: 22.3 },
+    {
+      date: "Jan 1 (Wed)",
+      orders: 28,
+      revenue: 1456,
+      avgOrder: 52.0,
+      change: 5.2,
+    },
+    {
+      date: "Jan 2 (Thu)",
+      orders: 32,
+      revenue: 1680,
+      avgOrder: 52.5,
+      change: 15.4,
+    },
+    {
+      date: "Jan 3 (Fri)",
+      orders: 45,
+      revenue: 2475,
+      avgOrder: 55.0,
+      change: 47.3,
+    },
+    {
+      date: "Jan 4 (Sat)",
+      orders: 52,
+      revenue: 2860,
+      avgOrder: 55.0,
+      change: 15.6,
+    },
+    {
+      date: "Jan 5 (Sun)",
+      orders: 38,
+      revenue: 1976,
+      avgOrder: 52.0,
+      change: -30.9,
+    },
+    {
+      date: "Jan 6 (Mon)",
+      orders: 25,
+      revenue: 1300,
+      avgOrder: 52.0,
+      change: -34.2,
+    },
+    {
+      date: "Jan 7 (Tue)",
+      orders: 30,
+      revenue: 1590,
+      avgOrder: 53.0,
+      change: 22.3,
+    },
   ],
   peakHours: [
     { hour: "11:00-12:00", orders: 45, revenue: 2340, percentage: 8.7 },
-    { hour: "12:00-13:00", orders: 98, revenue: 5390, percentage: 20.0, isPeak: true },
+    {
+      hour: "12:00-13:00",
+      orders: 98,
+      revenue: 5390,
+      percentage: 20.0,
+      isPeak: true,
+    },
     { hour: "13:00-14:00", orders: 87, revenue: 4785, percentage: 17.8 },
     { hour: "14:00-15:00", orders: 52, revenue: 2704, percentage: 10.0 },
     { hour: "18:00-19:00", orders: 76, revenue: 4180, percentage: 15.5 },
@@ -118,7 +204,12 @@ const ordersData = {
     { stage: "Delivered", count: 812, percentage: 96.4 },
   ],
   byStatus: [
-    { status: "Pending Payment", count: 15, percentage: 1.8, avgTime: "18 mins" },
+    {
+      status: "Pending Payment",
+      count: 15,
+      percentage: 1.8,
+      avgTime: "18 mins",
+    },
     { status: "Paid", count: 8, percentage: 0.9, avgTime: "5 mins" },
     { status: "Preparing", count: 12, percentage: 1.4, avgTime: "23 mins" },
     { status: "Ready", count: 5, percentage: 0.6, avgTime: "8 mins" },
@@ -152,14 +243,56 @@ const customerData = {
   vsLastChurn: -2,
   vsLastLtv: 12,
   segments: [
-    { segment: "VIP (6+ orders)", customers: 82, orders: 512, revenue: 28672, avgOrder: 56.0, revenuePercent: 63.4 },
-    { segment: "Regular (2-5)", customers: 180, orders: 289, revenue: 13572, avgOrder: 46.96, revenuePercent: 30.0 },
-    { segment: "New (1 order)", customers: 245, orders: 55, revenue: 2986, avgOrder: 54.29, revenuePercent: 6.6 },
+    {
+      segment: "VIP (6+ orders)",
+      customers: 82,
+      orders: 512,
+      revenue: 28672,
+      avgOrder: 56.0,
+      revenuePercent: 63.4,
+    },
+    {
+      segment: "Regular (2-5)",
+      customers: 180,
+      orders: 289,
+      revenue: 13572,
+      avgOrder: 46.96,
+      revenuePercent: 30.0,
+    },
+    {
+      segment: "New (1 order)",
+      customers: 245,
+      orders: 55,
+      revenue: 2986,
+      avgOrder: 54.29,
+      revenuePercent: 6.6,
+    },
   ],
   cohortRetention: [
-    { cohort: "Nov 2025", month1: 100, month2: 73, month3: 54, month4: 42, month5: 38 },
-    { cohort: "Dec 2025", month1: 100, month2: 68, month3: 48, month4: 35, month5: null },
-    { cohort: "Jan 2026", month1: 100, month2: 71, month3: null, month4: null, month5: null },
+    {
+      cohort: "Nov 2025",
+      month1: 100,
+      month2: 73,
+      month3: 54,
+      month4: 42,
+      month5: 38,
+    },
+    {
+      cohort: "Dec 2025",
+      month1: 100,
+      month2: 68,
+      month3: 48,
+      month4: 35,
+      month5: null,
+    },
+    {
+      cohort: "Jan 2026",
+      month1: 100,
+      month2: 71,
+      month3: null,
+      month4: null,
+      month5: null,
+    },
   ],
   frequency: [
     { frequency: "Weekly", customers: 34, percentage: 6.7 },
@@ -172,18 +305,88 @@ const customerData = {
 
 const menuData = {
   topItems: [
-    { rank: 1, name: "Jollof Rice", orders: 312, quantity: 456, revenue: 9120, percentage: 20.2 },
-    { rank: 2, name: "Fried Chicken", orders: 298, quantity: 412, revenue: 8240, percentage: 18.2 },
-    { rank: 3, name: "Beef Suya", orders: 234, quantity: 345, revenue: 6900, percentage: 15.3 },
-    { rank: 4, name: "Plantain", orders: 456, quantity: 678, revenue: 3390, percentage: 7.5 },
-    { rank: 5, name: "Egusi Soup", orders: 189, quantity: 234, revenue: 4680, percentage: 10.3 },
+    {
+      rank: 1,
+      name: "Jollof Rice",
+      orders: 312,
+      quantity: 456,
+      revenue: 9120,
+      percentage: 20.2,
+    },
+    {
+      rank: 2,
+      name: "Fried Chicken",
+      orders: 298,
+      quantity: 412,
+      revenue: 8240,
+      percentage: 18.2,
+    },
+    {
+      rank: 3,
+      name: "Beef Suya",
+      orders: 234,
+      quantity: 345,
+      revenue: 6900,
+      percentage: 15.3,
+    },
+    {
+      rank: 4,
+      name: "Plantain",
+      orders: 456,
+      quantity: 678,
+      revenue: 3390,
+      percentage: 7.5,
+    },
+    {
+      rank: 5,
+      name: "Egusi Soup",
+      orders: 189,
+      quantity: 234,
+      revenue: 4680,
+      percentage: 10.3,
+    },
   ],
   profitability: [
-    { item: "Jollof Rice", sold: 456, revenue: 9120, cost: 2736, profit: 6384, margin: 70 },
-    { item: "Fried Chicken", sold: 412, revenue: 8240, cost: 3296, profit: 4944, margin: 60 },
-    { item: "Beef Suya", sold: 345, revenue: 6900, cost: 2760, profit: 4140, margin: 60 },
-    { item: "Plantain", sold: 678, revenue: 3390, cost: 509, profit: 2881, margin: 85 },
-    { item: "Drinks", sold: 789, revenue: 3945, cost: 986, profit: 2959, margin: 75 },
+    {
+      item: "Jollof Rice",
+      sold: 456,
+      revenue: 9120,
+      cost: 2736,
+      profit: 6384,
+      margin: 70,
+    },
+    {
+      item: "Fried Chicken",
+      sold: 412,
+      revenue: 8240,
+      cost: 3296,
+      profit: 4944,
+      margin: 60,
+    },
+    {
+      item: "Beef Suya",
+      sold: 345,
+      revenue: 6900,
+      cost: 2760,
+      profit: 4140,
+      margin: 60,
+    },
+    {
+      item: "Plantain",
+      sold: 678,
+      revenue: 3390,
+      cost: 509,
+      profit: 2881,
+      margin: 85,
+    },
+    {
+      item: "Drinks",
+      sold: 789,
+      revenue: 3945,
+      cost: 986,
+      profit: 2959,
+      margin: 75,
+    },
   ],
   trends: [
     { item: "Jollof Rice", thisMonth: 456, lastMonth: 398, change: 14.6 },
@@ -193,10 +396,34 @@ const menuData = {
     { item: "Fried Rice", thisMonth: 189, lastMonth: 206, change: -8.3 },
   ],
   categories: [
-    { category: "Main Dishes", items: 12, orders: 856, revenue: 32450, percentage: 71.7 },
-    { category: "Sides", items: 8, orders: 1234, revenue: 6780, percentage: 15.0 },
-    { category: "Drinks", items: 15, orders: 789, revenue: 3945, percentage: 8.7 },
-    { category: "Desserts", items: 5, orders: 123, revenue: 2055, percentage: 4.5 },
+    {
+      category: "Main Dishes",
+      items: 12,
+      orders: 856,
+      revenue: 32450,
+      percentage: 71.7,
+    },
+    {
+      category: "Sides",
+      items: 8,
+      orders: 1234,
+      revenue: 6780,
+      percentage: 15.0,
+    },
+    {
+      category: "Drinks",
+      items: 15,
+      orders: 789,
+      revenue: 3945,
+      percentage: 8.7,
+    },
+    {
+      category: "Desserts",
+      items: 5,
+      orders: 123,
+      revenue: 2055,
+      percentage: 4.5,
+    },
   ],
 };
 
@@ -206,9 +433,21 @@ const deliveryData = {
   onTimeRate: 89,
   successRate: 96.4,
   byMethod: [
-    { method: "Self Delivery", orders: 412, avgTime: 32, cost: 5.0, successRate: 98.5 },
+    {
+      method: "Self Delivery",
+      orders: 412,
+      avgTime: 32,
+      cost: 5.0,
+      successRate: 98.5,
+    },
     { method: "Yango", orders: 234, avgTime: 38, cost: 7.5, successRate: 95.2 },
-    { method: "Bolt Food", orders: 98, avgTime: 35, cost: 0, successRate: 94.9 },
+    {
+      method: "Bolt Food",
+      orders: 98,
+      avgTime: 35,
+      cost: 0,
+      successRate: 94.9,
+    },
     { method: "Chowdeck", orders: 47, avgTime: 40, cost: 0, successRate: 93.6 },
   ],
   timeDistribution: [
@@ -219,10 +458,30 @@ const deliveryData = {
     { range: "60+ mins", orders: 31, percentage: 4.2, rating: 2 },
   ],
   issues: [
-    { issue: "Delayed (>60 min)", count: 31, percentage: 4.2, resolution: "Discount applied" },
-    { issue: "Wrong Address", count: 8, percentage: 1.1, resolution: "Reshipped" },
-    { issue: "Customer Unavailable", count: 5, percentage: 0.7, resolution: "Returned" },
-    { issue: "Food Spilled", count: 3, percentage: 0.4, resolution: "Refunded" },
+    {
+      issue: "Delayed (>60 min)",
+      count: 31,
+      percentage: 4.2,
+      resolution: "Discount applied",
+    },
+    {
+      issue: "Wrong Address",
+      count: 8,
+      percentage: 1.1,
+      resolution: "Reshipped",
+    },
+    {
+      issue: "Customer Unavailable",
+      count: 5,
+      percentage: 0.7,
+      resolution: "Returned",
+    },
+    {
+      issue: "Food Spilled",
+      count: 3,
+      percentage: 0.4,
+      resolution: "Refunded",
+    },
     { issue: "Other", count: 4, percentage: 0.5, resolution: "Case-by-case" },
   ],
   riderPerformance: [
@@ -233,7 +492,13 @@ const deliveryData = {
   ],
 };
 
-function SummaryCard({ title, value, subtitle, change, changeType }: {
+function SummaryCard({
+  title,
+  value,
+  subtitle,
+  change,
+  changeType,
+}: {
   title: string;
   value: string;
   subtitle?: string;
@@ -243,18 +508,42 @@ function SummaryCard({ title, value, subtitle, change, changeType }: {
   return (
     <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
       <p className="text-sm text-[var(--muted-foreground)]">{title}</p>
-      <p className="text-2xl font-bold text-[var(--foreground)] mt-1">{value}</p>
-      {subtitle && <p className="text-xs text-[var(--muted-foreground)] mt-1">{subtitle}</p>}
+      <p className="text-2xl font-bold text-[var(--foreground)] mt-1">
+        {value}
+      </p>
+      {subtitle && (
+        <p className="text-xs text-[var(--muted-foreground)] mt-1">
+          {subtitle}
+        </p>
+      )}
       {change !== undefined && (
-        <p className={`text-xs mt-1 ${changeType === "positive" ? "text-emerald-600" : changeType === "negative" ? "text-red-600" : "text-[var(--muted-foreground)]"}`}>
-          {change > 0 ? "+" : ""}{change}% {changeType === "positive" ? "↑" : changeType === "negative" ? "↓" : ""}
+        <p
+          className={`text-xs mt-1 ${
+            changeType === "positive"
+              ? "text-emerald-600"
+              : changeType === "negative"
+              ? "text-red-600"
+              : "text-[var(--muted-foreground)]"
+          }`}
+        >
+          {change > 0 ? "+" : ""}
+          {change}%{" "}
+          {changeType === "positive"
+            ? "↑"
+            : changeType === "negative"
+            ? "↓"
+            : ""}
         </p>
       )}
     </div>
   );
 }
 
-function DataTable({ headers, data, className = "" }: {
+function DataTable({
+  headers,
+  data,
+  className = "",
+}: {
   headers: string[];
   data: (string | number | React.ReactNode)[][];
   className?: string;
@@ -265,7 +554,10 @@ function DataTable({ headers, data, className = "" }: {
         <thead className="bg-[var(--muted)]">
           <tr>
             {headers.map((header, i) => (
-              <th key={i} className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider">
+              <th
+                key={i}
+                className="px-4 py-3 text-left text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider"
+              >
                 {header}
               </th>
             ))}
@@ -275,7 +567,10 @@ function DataTable({ headers, data, className = "" }: {
           {data.map((row, i) => (
             <tr key={i} className="hover:bg-[var(--muted)] transition-colors">
               {row.map((cell, j) => (
-                <td key={j} className="px-4 py-3 text-sm text-[var(--foreground)]">
+                <td
+                  key={j}
+                  className="px-4 py-3 text-sm text-[var(--foreground)]"
+                >
                   {cell}
                 </td>
               ))}
@@ -287,24 +582,45 @@ function DataTable({ headers, data, className = "" }: {
   );
 }
 
-function ProgressBar({ value, max, color = "bg-[var(--primary)]" }: { value: number; max: number; color?: string }) {
+function ProgressBar({
+  value,
+  max,
+  color = "bg-[var(--primary)]",
+}: {
+  value: number;
+  max: number;
+  color?: string;
+}) {
   return (
     <div className="h-2 bg-[var(--muted)] rounded-full overflow-hidden">
-      <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${(value / max) * 100}%` }} />
+      <div
+        className={`h-full ${color} rounded-full transition-all`}
+        style={{ width: `${(value / max) * 100}%` }}
+      />
     </div>
   );
 }
 
-function SimpleBarChart({ data, maxValue }: { data: { label: string; value: number; highlight?: boolean }[]; maxValue: number }) {
+function SimpleBarChart({
+  data,
+  maxValue,
+}: {
+  data: { label: string; value: number; highlight?: boolean }[];
+  maxValue: number;
+}) {
   return (
     <div className="flex items-end justify-between h-32 gap-1">
       {data.map((item, i) => (
         <div key={i} className="flex-1 flex flex-col items-center gap-1">
           <div
-            className={`w-full rounded-t transition-all ${item.highlight ? "bg-[var(--primary)]" : "bg-[var(--primary)]/50"}`}
+            className={`w-full rounded-t transition-all ${
+              item.highlight ? "bg-[var(--primary)]" : "bg-[var(--primary)]/50"
+            }`}
             style={{ height: `${(item.value / maxValue) * 100}%` }}
           />
-          <span className="text-[8px] text-[var(--muted-foreground)] whitespace-nowrap">{item.label}</span>
+          <span className="text-[8px] text-[var(--muted-foreground)] whitespace-nowrap">
+            {item.label}
+          </span>
         </div>
       ))}
     </div>
@@ -322,7 +638,7 @@ function SalesReports() {
     if (dateRange === "Today" || dateRange === "Yesterday") {
       // Hourly data for today/yesterday
       return {
-        chartData: salesData.hourlyPerformance.map(h => ({
+        chartData: salesData.hourlyPerformance.map((h) => ({
           label: h.time,
           fullLabel: h.time,
           revenue: h.revenue,
@@ -334,7 +650,7 @@ function SalesReports() {
     } else if (dateRange === "This Week" || dateRange === "Last 7 days") {
       // Daily data for this week
       return {
-        chartData: salesData.dailyPerformance.map(d => ({
+        chartData: salesData.dailyPerformance.map((d) => ({
           label: d.date.split(" ")[0],
           fullLabel: d.date,
           revenue: d.revenue,
@@ -346,7 +662,7 @@ function SalesReports() {
     } else if (dateRange === "This Month" || dateRange === "Last 30 Days") {
       // Daily data for month
       return {
-        chartData: salesData.monthlyPerformance.map(d => ({
+        chartData: salesData.monthlyPerformance.map((d) => ({
           label: d.date,
           fullLabel: d.date,
           revenue: d.revenue,
@@ -358,7 +674,7 @@ function SalesReports() {
     } else {
       // Default to daily performance
       return {
-        chartData: salesData.dailyPerformance.map(d => ({
+        chartData: salesData.dailyPerformance.map((d) => ({
           label: d.date.split(" ")[0],
           fullLabel: d.date,
           revenue: d.revenue,
@@ -423,10 +739,14 @@ function SalesReports() {
     <div className="space-y-6">
       {/* Report Configuration */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Generate Sales Report</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Generate Sales Report
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="text-xs text-[var(--muted-foreground)] block mb-1">Date Range</label>
+            <label className="text-xs text-[var(--muted-foreground)] block mb-1">
+              Date Range
+            </label>
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
@@ -441,7 +761,9 @@ function SalesReports() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-[var(--muted-foreground)] block mb-1">Group By</label>
+            <label className="text-xs text-[var(--muted-foreground)] block mb-1">
+              Group By
+            </label>
             <select
               value={groupBy}
               onChange={(e) => setGroupBy(e.target.value)}
@@ -471,8 +793,8 @@ function SalesReports() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard
           title="Total Revenue"
-          value={`₵${salesData.totalRevenue.toLocaleString()}`}
-          subtitle={`+₵${salesData.vsLastRevenue.toLocaleString()} vs last month`}
+          value={`₵{salesData.totalRevenue.toLocaleString()}`}
+          subtitle={`+₵{salesData.vsLastRevenue.toLocaleString()} vs last month`}
           change={salesData.growth}
           changeType="positive"
         />
@@ -485,8 +807,8 @@ function SalesReports() {
         />
         <SummaryCard
           title="Avg Order Value"
-          value={`₵${salesData.avgOrderValue.toFixed(2)}`}
-          subtitle={`+₵${salesData.vsLastAov.toFixed(2)} vs last month`}
+          value={`₵{salesData.avgOrderValue.toFixed(2)}`}
+          subtitle={`+₵{salesData.vsLastAov.toFixed(2)} vs last month`}
           change={6.4}
           changeType="positive"
         />
@@ -502,15 +824,17 @@ function SalesReports() {
       {/* Revenue Trend Chart */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">{chartTitle}</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            {chartTitle}
+          </h3>
           {activeData ? (
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              {activeData.fullLabel}: ₵${activeData.revenue.toLocaleString()}
+              {activeData.fullLabel}: ₵{activeData.revenue.toLocaleString()}
             </p>
           ) : (
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              {dateRange === "Today" || dateRange === "Yesterday" 
-                ? "Hourly revenue breakdown" 
+              {dateRange === "Today" || dateRange === "Yesterday"
+                ? "Hourly revenue breakdown"
                 : dateRange === "This Week" || dateRange === "Last 7 days"
                 ? "Daily revenue over the past week"
                 : "Daily revenue breakdown"}
@@ -581,8 +905,13 @@ function SalesReports() {
       {/* Revenue by Channel */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Revenue by Channel</h3>
-          <ChartContainer config={revenueByChannelConfig} className="mx-auto aspect-square max-h-[250px]">
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+            Revenue by Channel
+          </h3>
+          <ChartContainer
+            config={revenueByChannelConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
             <PieChart>
               <ChartTooltip
                 content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -609,14 +938,26 @@ function SalesReports() {
           </ChartContainer>
           <div className="mt-4 space-y-2">
             {salesData.byChannel.map((channel, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
+              <div
+                key={i}
+                className="flex items-center justify-between text-xs"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: revenueByChannelData[i].fill }} />
-                  <span className="text-[var(--foreground)]">{channel.channel}</span>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: revenueByChannelData[i].fill }}
+                  />
+                  <span className="text-[var(--foreground)]">
+                    {channel.channel}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[var(--muted-foreground)]">₵${channel.revenue.toLocaleString()}</span>
-                  <span className="text-[var(--muted-foreground)] w-12 text-right">{channel.percentage}%</span>
+                  <span className="text-[var(--muted-foreground)]">
+                    ₵{channel.revenue.toLocaleString()}
+                  </span>
+                  <span className="text-[var(--muted-foreground)] w-12 text-right">
+                    {channel.percentage}%
+                  </span>
                 </div>
               </div>
             ))}
@@ -624,8 +965,13 @@ function SalesReports() {
         </div>
 
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Revenue by Payment Method</h3>
-          <ChartContainer config={revenueByPaymentConfig} className="mx-auto aspect-square max-h-[250px]">
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+            Revenue by Payment Method
+          </h3>
+          <ChartContainer
+            config={revenueByPaymentConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
             <PieChart>
               <ChartTooltip
                 content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -652,14 +998,26 @@ function SalesReports() {
           </ChartContainer>
           <div className="mt-4 space-y-2">
             {salesData.byPayment.map((payment, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
+              <div
+                key={i}
+                className="flex items-center justify-between text-xs"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: revenueByPaymentData[i].fill }} />
-                  <span className="text-[var(--foreground)]">{payment.method}</span>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: revenueByPaymentData[i].fill }}
+                  />
+                  <span className="text-[var(--foreground)]">
+                    {payment.method}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[var(--muted-foreground)]">₵${payment.revenue.toLocaleString()}</span>
-                  <span className="text-[var(--muted-foreground)] w-12 text-right">{payment.percentage}%</span>
+                  <span className="text-[var(--muted-foreground)]">
+                    ₵{payment.revenue.toLocaleString()}
+                  </span>
+                  <span className="text-[var(--muted-foreground)] w-12 text-right">
+                    {payment.percentage}%
+                  </span>
                 </div>
               </div>
             ))}
@@ -670,21 +1028,31 @@ function SalesReports() {
       {/* Peak Hours */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Peak Hours Analysis</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Peak Hours Analysis
+          </h3>
         </div>
         <DataTable
           headers={["Hour", "Orders", "Revenue", "% of Daily"]}
-          data={salesData.peakHours.map(h => [
+          data={salesData.peakHours.map((h) => [
             <span key={h.hour} className="flex items-center gap-2">
               {h.hour}
-              {h.isPeak && <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs rounded">Peak</span>}
+              {h.isPeak && (
+                <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs rounded">
+                  Peak
+                </span>
+              )}
             </span>,
             h.orders,
-            `₵${h.revenue.toLocaleString()}`,
+            `₵{h.revenue.toLocaleString()}`,
             <div key={`bar-${h.hour}`} className="flex items-center gap-2">
-              <ProgressBar value={h.percentage} max={25} color={h.isPeak ? "bg-amber-500" : "bg-[var(--primary)]"} />
+              <ProgressBar
+                value={h.percentage}
+                max={25}
+                color={h.isPeak ? "bg-amber-500" : "bg-[var(--primary)]"}
+              />
               <span className="text-xs">{h.percentage}%</span>
-            </div>
+            </div>,
           ])}
         />
       </div>
@@ -692,18 +1060,30 @@ function SalesReports() {
       {/* Day-by-Day Performance */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Day-by-Day Performance</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Day-by-Day Performance
+          </h3>
         </div>
         <DataTable
-          headers={["Date", "Orders", "Revenue", "Avg Order", "vs Previous Day"]}
-          data={salesData.dailyPerformance.map(d => [
+          headers={[
+            "Date",
+            "Orders",
+            "Revenue",
+            "Avg Order",
+            "vs Previous Day",
+          ]}
+          data={salesData.dailyPerformance.map((d) => [
             d.date,
             d.orders,
-            `₵${d.revenue.toLocaleString()}`,
-            `₵${d.avgOrder.toFixed(2)}`,
-            <span key={d.date} className={d.change >= 0 ? "text-emerald-600" : "text-red-600"}>
-              {d.change >= 0 ? "+" : ""}{d.change.toFixed(1)}% {d.change >= 0 ? "↑" : "↓"}
-            </span>
+            `₵{d.revenue.toLocaleString()}`,
+            `₵{d.avgOrder.toFixed(2)}`,
+            <span
+              key={d.date}
+              className={d.change >= 0 ? "text-emerald-600" : "text-red-600"}
+            >
+              {d.change >= 0 ? "+" : ""}
+              {d.change.toFixed(1)}% {d.change >= 0 ? "↑" : "↓"}
+            </span>,
           ])}
         />
       </div>
@@ -726,12 +1106,12 @@ function OrdersReports() {
 
   const orderStatusData = ordersData.byStatus.map((status, i) => {
     const colors = [
-      "hsl(45, 93%, 47%)",      // amber-500 for pending
-      "hsl(217, 91%, 60%)",     // blue-500 for paid
-      "hsl(262, 83%, 58%)",     // purple-500 for preparing
-      "hsl(188, 94%, 43%)",     // cyan-500 for ready
-      "hsl(239, 84%, 67%)",     // indigo-500 for dispatched
-      "hsl(142, 76%, 36%)",     // emerald-500 for delivered
+      "hsl(45, 93%, 47%)", // amber-500 for pending
+      "hsl(217, 91%, 60%)", // blue-500 for paid
+      "hsl(262, 83%, 58%)", // purple-500 for preparing
+      "hsl(188, 94%, 43%)", // cyan-500 for ready
+      "hsl(239, 84%, 67%)", // indigo-500 for dispatched
+      "hsl(142, 76%, 36%)", // emerald-500 for delivered
     ];
     return {
       name: status.status,
@@ -786,32 +1166,62 @@ function OrdersReports() {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <SummaryCard title="Total Orders" value={ordersData.total.toLocaleString()} />
-        <SummaryCard title="Completed" value={`${ordersData.completed} (${ordersData.completedRate}%)`} change={2.1} changeType="positive" />
-        <SummaryCard title="Cancelled" value={`${ordersData.cancelled} (${ordersData.cancelledRate}%)`} change={-0.5} changeType="positive" />
+        <SummaryCard
+          title="Total Orders"
+          value={ordersData.total.toLocaleString()}
+        />
+        <SummaryCard
+          title="Completed"
+          value={`${ordersData.completed} (${ordersData.completedRate}%)`}
+          change={2.1}
+          changeType="positive"
+        />
+        <SummaryCard
+          title="Cancelled"
+          value={`${ordersData.cancelled} (${ordersData.cancelledRate}%)`}
+          change={-0.5}
+          changeType="positive"
+        />
         <SummaryCard title="Avg Time" value={`${ordersData.avgTime} mins`} />
       </div>
 
       {/* Order Funnel */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Order Funnel Analysis</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Order Funnel Analysis
+        </h3>
         <div className="space-y-3">
           {ordersData.funnel.map((stage, i) => (
             <div key={i} className="flex items-center gap-4">
-              <div className="w-40 text-sm text-[var(--foreground)]">{stage.stage}</div>
+              <div className="w-40 text-sm text-[var(--foreground)]">
+                {stage.stage}
+              </div>
               <div className="flex-1">
-                <ProgressBar value={stage.percentage} max={100} color={stage.percentage === 100 ? "bg-emerald-500" : "bg-[var(--primary)]"} />
+                <ProgressBar
+                  value={stage.percentage}
+                  max={100}
+                  color={
+                    stage.percentage === 100
+                      ? "bg-emerald-500"
+                      : "bg-[var(--primary)]"
+                  }
+                />
               </div>
               <div className="w-24 text-right">
-                <span className="text-sm font-medium text-[var(--foreground)]">{stage.count}</span>
-                <span className="text-xs text-[var(--muted-foreground)] ml-1">({stage.percentage}%)</span>
+                <span className="text-sm font-medium text-[var(--foreground)]">
+                  {stage.count}
+                </span>
+                <span className="text-xs text-[var(--muted-foreground)] ml-1">
+                  ({stage.percentage}%)
+                </span>
               </div>
             </div>
           ))}
         </div>
         <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
           <p className="text-sm text-amber-700 dark:text-amber-300">
-            <strong>Drop-off Points:</strong> 168 customers (16.4%) didn&apos;t complete payment • 30 orders (3.6%) had delivery issues
+            <strong>Drop-off Points:</strong> 168 customers (16.4%) didn&apos;t
+            complete payment • 30 orders (3.6%) had delivery issues
           </p>
         </div>
       </div>
@@ -819,8 +1229,13 @@ function OrdersReports() {
       {/* Orders by Status & Cancellation Reasons */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Orders by Status</h3>
-          <ChartContainer config={orderStatusConfig} className="mx-auto aspect-square max-h-[250px]">
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+            Orders by Status
+          </h3>
+          <ChartContainer
+            config={orderStatusConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
             <PieChart>
               <ChartTooltip
                 content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -847,14 +1262,26 @@ function OrdersReports() {
           </ChartContainer>
           <div className="mt-4 space-y-2">
             {ordersData.byStatus.map((status, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
+              <div
+                key={i}
+                className="flex items-center justify-between text-xs"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: orderStatusData[i].fill }} />
-                  <span className="text-[var(--foreground)]">{status.status}</span>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: orderStatusData[i].fill }}
+                  />
+                  <span className="text-[var(--foreground)]">
+                    {status.status}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[var(--foreground)]">{status.count}</span>
-                  <span className="text-[var(--muted-foreground)] w-12 text-right">{status.percentage}%</span>
+                  <span className="text-[var(--foreground)]">
+                    {status.count}
+                  </span>
+                  <span className="text-[var(--muted-foreground)] w-12 text-right">
+                    {status.percentage}%
+                  </span>
                 </div>
               </div>
             ))}
@@ -862,8 +1289,13 @@ function OrdersReports() {
         </div>
 
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Cancellation Reasons</h3>
-          <ChartContainer config={cancellationConfig} className="mx-auto aspect-square max-h-[250px]">
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+            Cancellation Reasons
+          </h3>
+          <ChartContainer
+            config={cancellationConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
             <PieChart>
               <ChartTooltip
                 content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -890,28 +1322,47 @@ function OrdersReports() {
           </ChartContainer>
           <div className="mt-4 space-y-2">
             {ordersData.cancellationReasons.map((reason, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
+              <div
+                key={i}
+                className="flex items-center justify-between text-xs"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cancellationData[i].fill }} />
-                  <span className="text-[var(--foreground)]">{reason.reason}</span>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: cancellationData[i].fill }}
+                  />
+                  <span className="text-[var(--foreground)]">
+                    {reason.reason}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[var(--foreground)]">{reason.count}</span>
-                  <span className="text-[var(--muted-foreground)] w-12 text-right">{reason.percentage}%</span>
+                  <span className="text-[var(--foreground)]">
+                    {reason.count}
+                  </span>
+                  <span className="text-[var(--muted-foreground)] w-12 text-right">
+                    {reason.percentage}%
+                  </span>
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-4 p-3 border-t border-[var(--border)] bg-red-50 dark:bg-red-900/20 rounded">
-            <p className="text-xs text-red-700 dark:text-red-300">Lost Revenue: <strong>₵2,145</strong></p>
+            <p className="text-xs text-red-700 dark:text-red-300">
+              Lost Revenue: <strong>₵2,145</strong>
+            </p>
           </div>
         </div>
       </div>
 
       {/* Order Value Distribution */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Order Value Distribution</h3>
-        <ChartContainer config={orderValueConfig} className="mx-auto aspect-square max-h-[250px]">
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Order Value Distribution
+        </h3>
+        <ChartContainer
+          config={orderValueConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
           <PieChart>
             <ChartTooltip
               content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -940,12 +1391,19 @@ function OrdersReports() {
           {ordersData.valueDistribution.map((range, i) => (
             <div key={i} className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: orderValueData[i].fill }} />
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: orderValueData[i].fill }}
+                />
                 <span className="text-[var(--foreground)]">{range.range}</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-[var(--foreground)]">{range.orders} orders</span>
-                <span className="text-[var(--muted-foreground)] w-12 text-right">{range.percentage}%</span>
+                <span className="text-[var(--foreground)]">
+                  {range.orders} orders
+                </span>
+                <span className="text-[var(--muted-foreground)] w-12 text-right">
+                  {range.percentage}%
+                </span>
               </div>
             </div>
           ))}
@@ -1005,16 +1463,42 @@ function CustomerReports() {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <SummaryCard title="New Customers" value={customerData.newCustomers.toString()} change={customerData.vsLastNew} changeType="positive" subtitle="This month" />
-        <SummaryCard title="Repeat Rate" value={`${customerData.repeatRate}%`} change={customerData.vsLastRepeat} changeType="positive" />
-        <SummaryCard title="Churn Rate" value={`${customerData.churnRate}%`} change={customerData.vsLastChurn} changeType="positive" />
-        <SummaryCard title="Avg Lifetime Value" value={`$${customerData.avgLifetimeValue}`} change={8} changeType="positive" />
+        <SummaryCard
+          title="New Customers"
+          value={customerData.newCustomers.toString()}
+          change={customerData.vsLastNew}
+          changeType="positive"
+          subtitle="This month"
+        />
+        <SummaryCard
+          title="Repeat Rate"
+          value={`${customerData.repeatRate}%`}
+          change={customerData.vsLastRepeat}
+          changeType="positive"
+        />
+        <SummaryCard
+          title="Churn Rate"
+          value={`${customerData.churnRate}%`}
+          change={customerData.vsLastChurn}
+          changeType="positive"
+        />
+        <SummaryCard
+          title="Avg Lifetime Value"
+          value={`$${customerData.avgLifetimeValue}`}
+          change={8}
+          changeType="positive"
+        />
       </div>
 
       {/* Customer Segments */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Customer Segments Performance</h3>
-        <ChartContainer config={customerSegmentsConfig} className="mx-auto aspect-square max-h-[250px]">
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Customer Segments Performance
+        </h3>
+        <ChartContainer
+          config={customerSegmentsConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
           <PieChart>
             <ChartTooltip
               content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -1043,19 +1527,29 @@ function CustomerReports() {
           {customerData.segments.map((segment, i) => (
             <div key={i} className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: customerSegmentsData[i].fill }} />
-                <span className="text-[var(--foreground)]">{segment.segment}</span>
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: customerSegmentsData[i].fill }}
+                />
+                <span className="text-[var(--foreground)]">
+                  {segment.segment}
+                </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-[var(--muted-foreground)]">₵${segment.revenue.toLocaleString()}</span>
-                <span className="text-[var(--muted-foreground)] w-12 text-right">{segment.revenuePercent}%</span>
+                <span className="text-[var(--muted-foreground)]">
+                  ₵{segment.revenue.toLocaleString()}
+                </span>
+                <span className="text-[var(--muted-foreground)] w-12 text-right">
+                  {segment.revenuePercent}%
+                </span>
               </div>
             </div>
           ))}
         </div>
         <div className="mt-4 p-3 border-t border-[var(--border)] bg-amber-50 dark:bg-amber-900/20 rounded">
           <p className="text-xs text-amber-700 dark:text-amber-300">
-            <strong>Key Insight:</strong> VIP customers (16% of base) generate 63% of revenue
+            <strong>Key Insight:</strong> VIP customers (16% of base) generate
+            63% of revenue
           </p>
         </div>
       </div>
@@ -1063,11 +1557,20 @@ function CustomerReports() {
       {/* Cohort Retention */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Customer Retention Cohort Analysis</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Customer Retention Cohort Analysis
+          </h3>
         </div>
         <DataTable
-          headers={["Cohort", "Month 1", "Month 2", "Month 3", "Month 4", "Month 5"]}
-          data={customerData.cohortRetention.map(c => [
+          headers={[
+            "Cohort",
+            "Month 1",
+            "Month 2",
+            "Month 3",
+            "Month 4",
+            "Month 5",
+          ]}
+          data={customerData.cohortRetention.map((c) => [
             c.cohort,
             `${c.month1}%`,
             c.month2 ? `${c.month2}%` : "-",
@@ -1078,15 +1581,21 @@ function CustomerReports() {
         />
         <div className="p-4 border-t border-[var(--border)] bg-[var(--muted)]">
           <p className="text-sm text-[var(--foreground)]">
-            Average Month 2 Retention: <strong>71%</strong> • Average Month 3 Retention: <strong>51%</strong>
+            Average Month 2 Retention: <strong>71%</strong> • Average Month 3
+            Retention: <strong>51%</strong>
           </p>
         </div>
       </div>
 
       {/* Order Frequency */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Customer Order Frequency</h3>
-        <ChartContainer config={orderFrequencyConfig} className="mx-auto aspect-square max-h-[250px]">
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Customer Order Frequency
+        </h3>
+        <ChartContainer
+          config={orderFrequencyConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
           <PieChart>
             <ChartTooltip
               content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -1115,12 +1624,21 @@ function CustomerReports() {
           {customerData.frequency.map((freq, i) => (
             <div key={i} className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: orderFrequencyData[i].fill }} />
-                <span className="text-[var(--foreground)]">{freq.frequency}</span>
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: orderFrequencyData[i].fill }}
+                />
+                <span className="text-[var(--foreground)]">
+                  {freq.frequency}
+                </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-[var(--foreground)]">{freq.customers} customers</span>
-                <span className="text-[var(--muted-foreground)] w-12 text-right">{freq.percentage}%</span>
+                <span className="text-[var(--foreground)]">
+                  {freq.customers} customers
+                </span>
+                <span className="text-[var(--muted-foreground)] w-12 text-right">
+                  {freq.percentage}%
+                </span>
               </div>
             </div>
           ))}
@@ -1156,12 +1674,26 @@ function MenuReports() {
       {/* Top Selling Items */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Top Selling Items</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Top Selling Items
+          </h3>
         </div>
         <DataTable
-          headers={["Rank", "Item Name", "Orders", "Quantity", "Revenue", "% of Total"]}
-          data={menuData.topItems.map(item => [
-            <span key={item.rank} className="w-6 h-6 rounded-full bg-[var(--primary)] text-white flex items-center justify-center text-xs font-bold">{item.rank}</span>,
+          headers={[
+            "Rank",
+            "Item Name",
+            "Orders",
+            "Quantity",
+            "Revenue",
+            "% of Total",
+          ]}
+          data={menuData.topItems.map((item) => [
+            <span
+              key={item.rank}
+              className="w-6 h-6 rounded-full bg-[var(--primary)] text-white flex items-center justify-center text-xs font-bold"
+            >
+              {item.rank}
+            </span>,
             item.name,
             item.orders,
             item.quantity,
@@ -1169,7 +1701,7 @@ function MenuReports() {
             <div key={item.name} className="flex items-center gap-2">
               <ProgressBar value={item.percentage} max={25} />
               <span className="text-xs">{item.percentage}%</span>
-            </div>
+            </div>,
           ])}
         />
       </div>
@@ -1177,19 +1709,28 @@ function MenuReports() {
       {/* Profitability Analysis */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Item Profitability Analysis</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Item Profitability Analysis
+          </h3>
         </div>
         <DataTable
           headers={["Item", "Sold", "Revenue", "Cost", "Profit", "Margin"]}
-          data={menuData.profitability.map(item => [
+          data={menuData.profitability.map((item) => [
             item.item,
             item.sold,
             `$${item.revenue.toLocaleString()}`,
             `$${item.cost.toLocaleString()}`,
             `$${item.profit.toLocaleString()}`,
-            <span key={item.item} className={`px-2 py-1 rounded text-xs font-medium ${item.margin >= 70 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
+            <span
+              key={item.item}
+              className={`px-2 py-1 rounded text-xs font-medium ${
+                item.margin >= 70
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+              }`}
+            >
               {item.margin}%
-            </span>
+            </span>,
           ])}
         />
       </div>
@@ -1198,24 +1739,37 @@ function MenuReports() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
           <div className="p-4 border-b border-[var(--border)]">
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Menu Item Trends</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              Menu Item Trends
+            </h3>
           </div>
           <DataTable
             headers={["Item", "This Month", "Last Month", "Change"]}
-            data={menuData.trends.map(item => [
+            data={menuData.trends.map((item) => [
               item.item,
               item.thisMonth,
               item.lastMonth,
-              <span key={item.item} className={item.change >= 0 ? "text-emerald-600" : "text-red-600"}>
-                {item.change >= 0 ? "+" : ""}{item.change}% {item.change >= 0 ? "↑" : "↓"}
-              </span>
+              <span
+                key={item.item}
+                className={
+                  item.change >= 0 ? "text-emerald-600" : "text-red-600"
+                }
+              >
+                {item.change >= 0 ? "+" : ""}
+                {item.change}% {item.change >= 0 ? "↑" : "↓"}
+              </span>,
             ])}
           />
         </div>
 
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Menu Mix Analysis</h3>
-          <ChartContainer config={menuCategoryConfig} className="mx-auto aspect-square max-h-[250px]">
+          <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+            Menu Mix Analysis
+          </h3>
+          <ChartContainer
+            config={menuCategoryConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
             <PieChart>
               <ChartTooltip
                 content={<ChartTooltipContent nameKey="name" hideLabel />}
@@ -1242,14 +1796,26 @@ function MenuReports() {
           </ChartContainer>
           <div className="mt-4 space-y-2">
             {menuData.categories.map((category, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
+              <div
+                key={i}
+                className="flex items-center justify-between text-xs"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: menuCategoryData[i].fill }} />
-                  <span className="text-[var(--foreground)]">{category.category}</span>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: menuCategoryData[i].fill }}
+                  />
+                  <span className="text-[var(--foreground)]">
+                    {category.category}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[var(--muted-foreground)]">₵${category.revenue.toLocaleString()}</span>
-                  <span className="text-[var(--muted-foreground)] w-12 text-right">{category.percentage}%</span>
+                  <span className="text-[var(--muted-foreground)]">
+                    ₵{category.revenue.toLocaleString()}
+                  </span>
+                  <span className="text-[var(--muted-foreground)] w-12 text-right">
+                    {category.percentage}%
+                  </span>
                 </div>
               </div>
             ))}
@@ -1266,27 +1832,51 @@ function DeliveryReports() {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <SummaryCard title="Deliveries" value={deliveryData.totalDeliveries.toLocaleString()} />
+        <SummaryCard
+          title="Deliveries"
+          value={deliveryData.totalDeliveries.toLocaleString()}
+        />
         <SummaryCard title="Avg Time" value={`${deliveryData.avgTime} mins`} />
-        <SummaryCard title="On-Time Rate" value={`${deliveryData.onTimeRate}%`} change={2} changeType="positive" />
-        <SummaryCard title="Success Rate" value={`${deliveryData.successRate}%`} change={1.2} changeType="positive" />
+        <SummaryCard
+          title="On-Time Rate"
+          value={`${deliveryData.onTimeRate}%`}
+          change={2}
+          changeType="positive"
+        />
+        <SummaryCard
+          title="Success Rate"
+          value={`${deliveryData.successRate}%`}
+          change={1.2}
+          changeType="positive"
+        />
       </div>
 
       {/* Delivery Method Breakdown */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Delivery Method Breakdown</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Delivery Method Breakdown
+          </h3>
         </div>
         <DataTable
           headers={["Method", "Orders", "Avg Time", "Cost", "Success Rate"]}
-          data={deliveryData.byMethod.map(m => [
+          data={deliveryData.byMethod.map((m) => [
             m.method,
             m.orders,
             `${m.avgTime} min`,
             m.cost > 0 ? `$${m.cost.toFixed(2)}` : "Included*",
-            <span key={m.method} className={`px-2 py-1 rounded text-xs font-medium ${m.successRate >= 97 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : m.successRate >= 95 ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
+            <span
+              key={m.method}
+              className={`px-2 py-1 rounded text-xs font-medium ${
+                m.successRate >= 97
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  : m.successRate >= 95
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+              }`}
+            >
               {m.successRate}%
-            </span>
+            </span>,
           ])}
         />
       </div>
@@ -1295,30 +1885,39 @@ function DeliveryReports() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
           <div className="p-4 border-b border-[var(--border)]">
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Delivery Time Distribution</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              Delivery Time Distribution
+            </h3>
           </div>
           <DataTable
             headers={["Time Range", "Orders", "% of Total", "Rating"]}
-            data={deliveryData.timeDistribution.map(t => [
+            data={deliveryData.timeDistribution.map((t) => [
               t.range,
               t.orders,
               `${t.percentage}%`,
-              <span key={t.range}>{"⭐".repeat(t.rating)}</span>
+              <span key={t.range}>{"⭐".repeat(t.rating)}</span>,
             ])}
           />
         </div>
 
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
           <div className="p-4 border-b border-[var(--border)]">
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Delivery Issues Report</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              Delivery Issues Report
+            </h3>
           </div>
           <DataTable
             headers={["Issue Type", "Count", "% of Deliveries", "Resolution"]}
-            data={deliveryData.issues.map(i => [
+            data={deliveryData.issues.map((i) => [
               i.issue,
               i.count,
               `${i.percentage}%`,
-              <span key={i.issue} className="text-xs text-[var(--muted-foreground)]">{i.resolution}</span>
+              <span
+                key={i.issue}
+                className="text-xs text-[var(--muted-foreground)]"
+              >
+                {i.resolution}
+              </span>,
             ])}
           />
         </div>
@@ -1327,16 +1926,31 @@ function DeliveryReports() {
       {/* Rider Performance */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Rider Performance (Self-Delivery)</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Rider Performance (Self-Delivery)
+          </h3>
         </div>
         <DataTable
-          headers={["Rider Name", "Deliveries", "Avg Time", "On-Time %", "Rating"]}
-          data={deliveryData.riderPerformance.map(r => [
+          headers={[
+            "Rider Name",
+            "Deliveries",
+            "Avg Time",
+            "On-Time %",
+            "Rating",
+          ]}
+          data={deliveryData.riderPerformance.map((r) => [
             r.name,
             r.deliveries,
             `${r.avgTime} min`,
-            <span key={r.name} className={r.onTime >= 90 ? "text-emerald-600" : "text-amber-600"}>{r.onTime}%</span>,
-            <span key={`rating-${r.name}`} className="text-amber-500">{r.rating}⭐</span>
+            <span
+              key={r.name}
+              className={r.onTime >= 90 ? "text-emerald-600" : "text-amber-600"}
+            >
+              {r.onTime}%
+            </span>,
+            <span key={`rating-${r.name}`} className="text-amber-500">
+              {r.rating}⭐
+            </span>,
           ])}
         />
       </div>
@@ -1346,22 +1960,41 @@ function DeliveryReports() {
 
 // Custom Reports Component
 function CustomReports() {
-  const [selectedSources, setSelectedSources] = useState(["Orders", "Customers"]);
-  const [selectedMetrics, setSelectedMetrics] = useState(["Total Revenue", "Order Count"]);
+  const [selectedSources, setSelectedSources] = useState([
+    "Orders",
+    "Customers",
+  ]);
+  const [selectedMetrics, setSelectedMetrics] = useState([
+    "Total Revenue",
+    "Order Count",
+  ]);
 
   return (
     <div className="space-y-6">
       {/* Custom Report Builder */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6">
-        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-6">Build Your Custom Report</h3>
-        
+        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-6">
+          Build Your Custom Report
+        </h3>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Data Sources */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">1. Select Data Sources</h4>
+            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">
+              1. Select Data Sources
+            </h4>
             <div className="space-y-2">
-              {["Orders", "Customers", "Menu Items", "Delivery", "Payments"].map((source) => (
-                <label key={source} className="flex items-center gap-2 cursor-pointer">
+              {[
+                "Orders",
+                "Customers",
+                "Menu Items",
+                "Delivery",
+                "Payments",
+              ].map((source) => (
+                <label
+                  key={source}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     checked={selectedSources.includes(source)}
@@ -1369,12 +2002,16 @@ function CustomReports() {
                       if (e.target.checked) {
                         setSelectedSources([...selectedSources, source]);
                       } else {
-                        setSelectedSources(selectedSources.filter(s => s !== source));
+                        setSelectedSources(
+                          selectedSources.filter((s) => s !== source)
+                        );
                       }
                     }}
                     className="w-4 h-4 rounded"
                   />
-                  <span className="text-sm text-[var(--foreground)]">{source}</span>
+                  <span className="text-sm text-[var(--foreground)]">
+                    {source}
+                  </span>
                 </label>
               ))}
             </div>
@@ -1382,10 +2019,22 @@ function CustomReports() {
 
           {/* Metrics */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">2. Choose Metrics</h4>
+            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">
+              2. Choose Metrics
+            </h4>
             <div className="space-y-2">
-              {["Total Revenue", "Order Count", "Customer Segments", "Payment Methods", "Top Items", "Delivery Times"].map((metric) => (
-                <label key={metric} className="flex items-center gap-2 cursor-pointer">
+              {[
+                "Total Revenue",
+                "Order Count",
+                "Customer Segments",
+                "Payment Methods",
+                "Top Items",
+                "Delivery Times",
+              ].map((metric) => (
+                <label
+                  key={metric}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     checked={selectedMetrics.includes(metric)}
@@ -1393,12 +2042,16 @@ function CustomReports() {
                       if (e.target.checked) {
                         setSelectedMetrics([...selectedMetrics, metric]);
                       } else {
-                        setSelectedMetrics(selectedMetrics.filter(m => m !== metric));
+                        setSelectedMetrics(
+                          selectedMetrics.filter((m) => m !== metric)
+                        );
                       }
                     }}
                     className="w-4 h-4 rounded"
                   />
-                  <span className="text-sm text-[var(--foreground)]">{metric}</span>
+                  <span className="text-sm text-[var(--foreground)]">
+                    {metric}
+                  </span>
                 </label>
               ))}
             </div>
@@ -1406,10 +2059,14 @@ function CustomReports() {
 
           {/* Filters */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">3. Filters</h4>
+            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">
+              3. Filters
+            </h4>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[var(--muted-foreground)] block mb-1">Date Range</label>
+                <label className="text-xs text-[var(--muted-foreground)] block mb-1">
+                  Date Range
+                </label>
                 <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                   <option>Last 30 days</option>
                   <option>Last 7 days</option>
@@ -1418,7 +2075,9 @@ function CustomReports() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-[var(--muted-foreground)] block mb-1">Channel</label>
+                <label className="text-xs text-[var(--muted-foreground)] block mb-1">
+                  Channel
+                </label>
                 <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
                   <option>All Channels</option>
                   <option>Phone</option>
@@ -1427,27 +2086,53 @@ function CustomReports() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-[var(--muted-foreground)] block mb-1">Min Order Value</label>
-                <input type="number" placeholder="₵0" className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm" />
+                <label className="text-xs text-[var(--muted-foreground)] block mb-1">
+                  Min Order Value
+                </label>
+                <input
+                  type="number"
+                  placeholder="₵0"
+                  className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm"
+                />
               </div>
             </div>
           </div>
 
           {/* Group By & Visualizations */}
           <div>
-            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">4. Group By</h4>
+            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">
+              4. Group By
+            </h4>
             <div className="flex gap-2 flex-wrap mb-4">
               {["Day", "Week", "Month", "Channel"].map((group) => (
-                <button key={group} className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm hover:bg-[var(--border)]">{group}</button>
+                <button
+                  key={group}
+                  className="px-3 py-1.5 bg-[var(--muted)] rounded-lg text-sm hover:bg-[var(--border)]"
+                >
+                  {group}
+                </button>
               ))}
             </div>
 
-            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">5. Visualizations</h4>
+            <h4 className="text-sm font-medium text-[var(--foreground)] mb-3">
+              5. Visualizations
+            </h4>
             <div className="space-y-2">
-              {["Summary Cards", "Line Chart", "Data Table", "Pie Chart", "Bar Chart"].map((viz) => (
-                <label key={viz} className="flex items-center gap-2 cursor-pointer">
+              {[
+                "Summary Cards",
+                "Line Chart",
+                "Data Table",
+                "Pie Chart",
+                "Bar Chart",
+              ].map((viz) => (
+                <label
+                  key={viz}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <input type="checkbox" className="w-4 h-4 rounded" />
-                  <span className="text-sm text-[var(--foreground)]">{viz}</span>
+                  <span className="text-sm text-[var(--foreground)]">
+                    {viz}
+                  </span>
                 </label>
               ))}
             </div>
@@ -1469,27 +2154,66 @@ function CustomReports() {
 
       {/* Saved Templates */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Saved Report Templates</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Saved Report Templates
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
-            { name: "Monthly Executive Summary", icon: "📊", schedule: "Monthly" },
-            { name: "Weekly Operations Review", icon: "📋", schedule: "Weekly" },
+            {
+              name: "Monthly Executive Summary",
+              icon: "📊",
+              schedule: "Monthly",
+            },
+            {
+              name: "Weekly Operations Review",
+              icon: "📋",
+              schedule: "Weekly",
+            },
             { name: "Daily Flash Report", icon: "⚡", schedule: "Daily" },
-            { name: "Quarterly Business Review", icon: "📈", schedule: "Quarterly" },
-            { name: "Tax Preparation Report", icon: "💰", schedule: "On-demand" },
+            {
+              name: "Quarterly Business Review",
+              icon: "📈",
+              schedule: "Quarterly",
+            },
+            {
+              name: "Tax Preparation Report",
+              icon: "💰",
+              schedule: "On-demand",
+            },
           ].map((template) => (
-            <div key={template.name} className="flex items-center justify-between p-3 bg-[var(--muted)] rounded-lg">
+            <div
+              key={template.name}
+              className="flex items-center justify-between p-3 bg-[var(--muted)] rounded-lg"
+            >
               <div className="flex items-center gap-3">
                 <span className="text-xl">{template.icon}</span>
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground)]">{template.name}</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">{template.schedule}</p>
+                  <p className="text-sm font-medium text-[var(--foreground)]">
+                    {template.name}
+                  </p>
+                  <p className="text-xs text-[var(--muted-foreground)]">
+                    {template.schedule}
+                  </p>
                 </div>
               </div>
               <button className="p-2 rounded-lg hover:bg-[var(--border)] text-[var(--primary)]">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </button>
             </div>
@@ -1499,13 +2223,49 @@ function CustomReports() {
 
       {/* Scheduled Reports */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Scheduled Reports</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Scheduled Reports
+        </h3>
         <DataTable
-          headers={["Report Name", "Frequency", "Time", "Recipients", "Format", "Actions"]}
+          headers={[
+            "Report Name",
+            "Frequency",
+            "Time",
+            "Recipients",
+            "Format",
+            "Actions",
+          ]}
           data={[
-            ["Daily Sales Report", "Daily", "6:00 AM", "owner@restaurant.com", "PDF, Excel", <button key="1" className="text-[var(--primary)] text-sm">Edit</button>],
-            ["Weekly Summary", "Weekly (Mon)", "8:00 AM", "team@restaurant.com", "PDF", <button key="2" className="text-[var(--primary)] text-sm">Edit</button>],
-            ["Monthly P&L", "Monthly (1st)", "9:00 AM", "owner@restaurant.com", "Excel", <button key="3" className="text-[var(--primary)] text-sm">Edit</button>],
+            [
+              "Daily Sales Report",
+              "Daily",
+              "6:00 AM",
+              "owner@restaurant.com",
+              "PDF, Excel",
+              <button key="1" className="text-[var(--primary)] text-sm">
+                Edit
+              </button>,
+            ],
+            [
+              "Weekly Summary",
+              "Weekly (Mon)",
+              "8:00 AM",
+              "team@restaurant.com",
+              "PDF",
+              <button key="2" className="text-[var(--primary)] text-sm">
+                Edit
+              </button>,
+            ],
+            [
+              "Monthly P&L",
+              "Monthly (1st)",
+              "9:00 AM",
+              "owner@restaurant.com",
+              "Excel",
+              <button key="3" className="text-[var(--primary)] text-sm">
+                Edit
+              </button>,
+            ],
           ]}
         />
       </div>
@@ -1515,12 +2275,34 @@ function CustomReports() {
 
 // Trends Component
 function TrendsReports() {
-  const [revenueActiveIndex, setRevenueActiveIndex] = useState<number | null>(null);
-  const [ordersActiveIndex, setOrdersActiveIndex] = useState<number | null>(null);
+  const [revenueActiveIndex, setRevenueActiveIndex] = useState<number | null>(
+    null
+  );
+  const [ordersActiveIndex, setOrdersActiveIndex] = useState<number | null>(
+    null
+  );
 
-  const revenueData = [8500, 9200, 7800, 10500, 12100, 14200, 12450, 11800, 13500, 15200, 14800, 16100];
-  const ordersData = [420, 480, 390, 520, 610, 720, 680, 590, 670, 780, 740, 856];
-  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const revenueData = [
+    8500, 9200, 7800, 10500, 12100, 14200, 12450, 11800, 13500, 15200, 14800,
+    16100,
+  ];
+  const ordersData = [
+    420, 480, 390, 520, 610, 720, 680, 590, 670, 780, 740, 856,
+  ];
+  const monthLabels = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   const revenueChartData = revenueData.map((val, i) => ({
     month: monthLabels[i],
@@ -1564,10 +2346,13 @@ function TrendsReports() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
           <div className="mb-4">
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Revenue Growth Trend</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              Revenue Growth Trend
+            </h3>
             {revenueActiveData ? (
               <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                {revenueActiveData.fullMonth}: ${revenueActiveData.revenue.toLocaleString()}
+                {revenueActiveData.fullMonth}: $
+                {revenueActiveData.revenue.toLocaleString()}
               </p>
             ) : (
               <p className="text-xs text-[var(--muted-foreground)] mt-1">
@@ -1575,7 +2360,10 @@ function TrendsReports() {
               </p>
             )}
           </div>
-          <ChartContainer config={revenueChartConfig} className="h-[200px] w-full">
+          <ChartContainer
+            config={revenueChartConfig}
+            className="h-[200px] w-full"
+          >
             <BarChart
               accessibilityLayer
               data={revenueChartData}
@@ -1623,9 +2411,15 @@ function TrendsReports() {
                     className="duration-200"
                     key={`cell-${index}`}
                     fillOpacity={
-                      revenueActiveIndex === null ? 1 : revenueActiveIndex === index ? 1 : 0.3
+                      revenueActiveIndex === null
+                        ? 1
+                        : revenueActiveIndex === index
+                        ? 1
+                        : 0.3
                     }
-                    stroke={revenueActiveIndex === index ? "var(--color-revenue)" : ""}
+                    stroke={
+                      revenueActiveIndex === index ? "var(--color-revenue)" : ""
+                    }
                     strokeWidth={revenueActiveIndex === index ? 2 : 0}
                     onMouseEnter={() => setRevenueActiveIndex(index)}
                   />
@@ -1637,7 +2431,9 @@ function TrendsReports() {
 
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
           <div className="mb-4">
-            <h3 className="text-sm font-semibold text-[var(--foreground)]">Order Volume Trend</h3>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              Order Volume Trend
+            </h3>
             {ordersActiveData ? (
               <p className="text-xs text-[var(--muted-foreground)] mt-1">
                 {ordersActiveData.fullMonth}: {ordersActiveData.orders} orders
@@ -1648,7 +2444,10 @@ function TrendsReports() {
               </p>
             )}
           </div>
-          <ChartContainer config={ordersChartConfig} className="h-[200px] w-full">
+          <ChartContainer
+            config={ordersChartConfig}
+            className="h-[200px] w-full"
+          >
             <BarChart
               accessibilityLayer
               data={ordersChartData}
@@ -1696,9 +2495,15 @@ function TrendsReports() {
                     className="duration-200"
                     key={`cell-${index}`}
                     fillOpacity={
-                      ordersActiveIndex === null ? 1 : ordersActiveIndex === index ? 1 : 0.3
+                      ordersActiveIndex === null
+                        ? 1
+                        : ordersActiveIndex === index
+                        ? 1
+                        : 0.3
                     }
-                    stroke={ordersActiveIndex === index ? "var(--color-orders)" : ""}
+                    stroke={
+                      ordersActiveIndex === index ? "var(--color-orders)" : ""
+                    }
                     strokeWidth={ordersActiveIndex === index ? 2 : 0}
                     onMouseEnter={() => setOrdersActiveIndex(index)}
                   />
@@ -1711,47 +2516,120 @@ function TrendsReports() {
 
       {/* Comparative Analysis */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Comparative Analysis</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Comparative Analysis
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div>
-            <label className="text-xs text-[var(--muted-foreground)] block mb-1">Period A</label>
+            <label className="text-xs text-[var(--muted-foreground)] block mb-1">
+              Period A
+            </label>
             <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
               <option>Jan 1-15, 2026</option>
             </select>
           </div>
           <div>
-            <label className="text-xs text-[var(--muted-foreground)] block mb-1">Period B</label>
+            <label className="text-xs text-[var(--muted-foreground)] block mb-1">
+              Period B
+            </label>
             <select className="w-full px-3 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm">
               <option>Dec 1-15, 2025</option>
             </select>
           </div>
           <div className="col-span-2 flex items-end">
-            <button className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">Compare</button>
+            <button className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium">
+              Compare
+            </button>
           </div>
         </div>
         <DataTable
           headers={["Metric", "Period A", "Period B", "Change"]}
           data={[
-            ["Revenue", "₵22,450", "₵19,230", <span key="1" className="text-emerald-600">+16.7% ↑</span>],
-            ["Orders", "428", "389", <span key="2" className="text-emerald-600">+10.0% ↑</span>],
-            ["Avg Order Value", "₵52.45", "₵49.43", <span key="3" className="text-emerald-600">+6.1% ↑</span>],
-            ["New Customers", "42", "38", <span key="4" className="text-emerald-600">+10.5% ↑</span>],
+            [
+              "Revenue",
+              "₵22,450",
+              "₵19,230",
+              <span key="1" className="text-emerald-600">
+                +16.7% ↑
+              </span>,
+            ],
+            [
+              "Orders",
+              "428",
+              "389",
+              <span key="2" className="text-emerald-600">
+                +10.0% ↑
+              </span>,
+            ],
+            [
+              "Avg Order Value",
+              "₵52.45",
+              "₵49.43",
+              <span key="3" className="text-emerald-600">
+                +6.1% ↑
+              </span>,
+            ],
+            [
+              "New Customers",
+              "42",
+              "38",
+              <span key="4" className="text-emerald-600">
+                +10.5% ↑
+              </span>,
+            ],
           ]}
         />
       </div>
 
       {/* Anomaly Detection */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">⚠️ Unusual Patterns Detected</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          ⚠️ Unusual Patterns Detected
+        </h3>
         <div className="space-y-3">
           {[
-            { type: "warning", message: "Tuesday revenue 40% below average", action: "Investigate: Was system down? Bad weather?" },
-            { type: "error", message: "Bolt Food orders dropped 60% this week", action: "Action: Check platform status" },
-            { type: "warning", message: "Mobile money payment failures up 25%", action: "Action: Contact payment provider" },
+            {
+              type: "warning",
+              message: "Tuesday revenue 40% below average",
+              action: "Investigate: Was system down? Bad weather?",
+            },
+            {
+              type: "error",
+              message: "Bolt Food orders dropped 60% this week",
+              action: "Action: Check platform status",
+            },
+            {
+              type: "warning",
+              message: "Mobile money payment failures up 25%",
+              action: "Action: Contact payment provider",
+            },
           ].map((alert, i) => (
-            <div key={i} className={`p-3 rounded-lg border ${alert.type === "error" ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800" : "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"}`}>
-              <p className={`text-sm font-medium ${alert.type === "error" ? "text-red-700 dark:text-red-300" : "text-amber-700 dark:text-amber-300"}`}>{alert.message}</p>
-              <p className={`text-xs mt-1 ${alert.type === "error" ? "text-red-600 dark:text-red-400" : "text-amber-600 dark:text-amber-400"}`}>→ {alert.action}</p>
+            <div
+              key={i}
+              className={`p-3 rounded-lg border ${
+                alert.type === "error"
+                  ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+                  : "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
+              }`}
+            >
+              <p
+                className={`text-sm font-medium ${
+                  alert.type === "error"
+                    ? "text-red-700 dark:text-red-300"
+                    : "text-amber-700 dark:text-amber-300"
+                }`}
+              >
+                {alert.message}
+              </p>
+              <p
+                className={`text-xs mt-1 ${
+                  alert.type === "error"
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-amber-600 dark:text-amber-400"
+                }`}
+              >
+                → {alert.action}
+              </p>
             </div>
           ))}
         </div>
@@ -1759,7 +2637,9 @@ function TrendsReports() {
 
       {/* Forecasts */}
       <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-4 text-white">
-        <h3 className="text-sm font-semibold mb-4">📈 AI-Powered Forecasts (Coming Soon)</h3>
+        <h3 className="text-sm font-semibold mb-4">
+          📈 AI-Powered Forecasts (Coming Soon)
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white/10 rounded-lg p-3">
             <p className="text-xs opacity-80">Expected Tomorrow</p>
@@ -1769,7 +2649,9 @@ function TrendsReports() {
           <div className="bg-white/10 rounded-lg p-3">
             <p className="text-xs opacity-80">Expected This Weekend</p>
             <p className="text-lg font-bold">Saturday: 52 orders • ₵2,860</p>
-            <p className="text-xs opacity-80 mt-1">Sunday: 38 orders • ₵1,976</p>
+            <p className="text-xs opacity-80 mt-1">
+              Sunday: 38 orders • ₵1,976
+            </p>
           </div>
         </div>
       </div>
@@ -1785,7 +2667,10 @@ function FinancialReports() {
   const grossProfitMargin = ((grossProfit / revenue) * 100).toFixed(1);
   const vsLastGrossProfit = 31661; // Last period gross profit
   const grossProfitChange = grossProfit - vsLastGrossProfit;
-  const grossProfitChangePercent = ((grossProfitChange / vsLastGrossProfit) * 100).toFixed(1);
+  const grossProfitChangePercent = (
+    (grossProfitChange / vsLastGrossProfit) *
+    100
+  ).toFixed(1);
 
   return (
     <div className="space-y-6">
@@ -1793,33 +2678,45 @@ function FinancialReports() {
       <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-xl border border-emerald-200 dark:border-emerald-800 p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100 mb-1">Gross Profit</h3>
-            <p className="text-sm text-emerald-700 dark:text-emerald-300">Revenue minus Cost of Goods Sold</p>
+            <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100 mb-1">
+              Gross Profit
+            </h3>
+            <p className="text-sm text-emerald-700 dark:text-emerald-300">
+              Revenue minus Cost of Goods Sold
+            </p>
           </div>
           <div className="text-4xl">💰</div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="bg-white dark:bg-[var(--card)] rounded-lg p-4">
-            <p className="text-xs text-[var(--muted-foreground)] mb-1">Gross Profit</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-1">
+              Gross Profit
+            </p>
             <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               ${grossProfit.toLocaleString()}
             </p>
             <p className="text-xs text-emerald-600 mt-1">
-              {grossProfitChange >= 0 ? "+" : ""}${Math.abs(grossProfitChange).toLocaleString()} ({grossProfitChangePercent}%) vs last period
+              {grossProfitChange >= 0 ? "+" : ""}$
+              {Math.abs(grossProfitChange).toLocaleString()} (
+              {grossProfitChangePercent}%) vs last period
             </p>
           </div>
           <div className="bg-white dark:bg-[var(--card)] rounded-lg p-4">
-            <p className="text-xs text-[var(--muted-foreground)] mb-1">Gross Profit Margin</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-1">
+              Gross Profit Margin
+            </p>
             <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
               {grossProfitMargin}%
             </p>
             <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              {(grossProfit / revenue * 100).toFixed(1)}% of revenue
+              {((grossProfit / revenue) * 100).toFixed(1)}% of revenue
             </p>
           </div>
           <div className="bg-white dark:bg-[var(--card)] rounded-lg p-4">
-            <p className="text-xs text-[var(--muted-foreground)] mb-1">COGS Ratio</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-1">
+              COGS Ratio
+            </p>
             <p className="text-2xl font-bold text-[var(--foreground)]">
               {((cogs / revenue) * 100).toFixed(1)}%
             </p>
@@ -1832,15 +2729,25 @@ function FinancialReports() {
         <div className="bg-white dark:bg-[var(--card)] rounded-lg p-4">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Total Revenue</span>
-              <span className="font-medium text-[var(--foreground)]">${revenue.toLocaleString()}</span>
+              <span className="text-[var(--muted-foreground)]">
+                Total Revenue
+              </span>
+              <span className="font-medium text-[var(--foreground)]">
+                ${revenue.toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-[var(--muted-foreground)]">Cost of Goods Sold (COGS)</span>
-              <span className="font-medium text-red-600">-${cogs.toLocaleString()}</span>
+              <span className="text-[var(--muted-foreground)]">
+                Cost of Goods Sold (COGS)
+              </span>
+              <span className="font-medium text-red-600">
+                -${cogs.toLocaleString()}
+              </span>
             </div>
             <div className="border-t border-[var(--border)] pt-2 flex justify-between">
-              <span className="font-semibold text-emerald-700 dark:text-emerald-400">Gross Profit</span>
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                Gross Profit
+              </span>
               <span className="font-bold text-lg text-emerald-700 dark:text-emerald-400">
                 ${grossProfit.toLocaleString()}
               </span>
@@ -1851,23 +2758,29 @@ function FinancialReports() {
 
       {/* P&L Summary */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Profit & Loss Statement</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Profit & Loss Statement
+        </h3>
         <div className="space-y-3">
           <div className="flex justify-between py-2 border-b border-[var(--border)]">
             <span className="font-medium text-[var(--foreground)]">INCOME</span>
             <span></span>
           </div>
           <div className="flex justify-between pl-4">
-            <span className="text-sm text-[var(--muted-foreground)]">Revenue from Orders</span>
+            <span className="text-sm text-[var(--muted-foreground)]">
+              Revenue from Orders
+            </span>
             <span className="text-sm text-[var(--foreground)]">₵45,230</span>
           </div>
           <div className="flex justify-between font-medium border-t border-[var(--border)] pt-2">
             <span className="text-[var(--foreground)]">TOTAL INCOME</span>
             <span className="text-emerald-600">₵45,230</span>
           </div>
-          
+
           <div className="flex justify-between py-2 border-b border-[var(--border)] mt-4">
-            <span className="font-medium text-[var(--foreground)]">EXPENSES</span>
+            <span className="font-medium text-[var(--foreground)]">
+              EXPENSES
+            </span>
             <span></span>
           </div>
           {[
@@ -1881,15 +2794,20 @@ function FinancialReports() {
             { item: "Other Expenses", amount: 500 },
           ].map((exp, i) => (
             <div key={i} className="flex justify-between pl-4">
-              <span className="text-sm text-[var(--muted-foreground)]">{exp.item}</span>
-              <span className="text-sm text-[var(--foreground)]">${exp.amount.toLocaleString()}{exp.percent ? ` (${exp.percent}%)` : ""}</span>
+              <span className="text-sm text-[var(--muted-foreground)]">
+                {exp.item}
+              </span>
+              <span className="text-sm text-[var(--foreground)]">
+                ${exp.amount.toLocaleString()}
+                {exp.percent ? ` (${exp.percent}%)` : ""}
+              </span>
             </div>
           ))}
           <div className="flex justify-between font-medium border-t border-[var(--border)] pt-2">
             <span className="text-[var(--foreground)]">TOTAL EXPENSES</span>
             <span className="text-red-600">$34,666</span>
           </div>
-          
+
           <div className="flex justify-between font-bold text-lg border-t-2 border-[var(--border)] pt-3 mt-4">
             <span className="text-[var(--foreground)]">NET PROFIT</span>
             <span className="text-emerald-600">$10,564 (23.4% margin)</span>
@@ -1900,27 +2818,65 @@ function FinancialReports() {
       {/* Payment Reconciliation */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="p-4 border-b border-[var(--border)]">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">Payment Reconciliation Report</h3>
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Payment Reconciliation Report
+          </h3>
         </div>
         <DataTable
-          headers={["Payment Method", "Expected", "Received", "Pending", "Difference"]}
+          headers={[
+            "Payment Method",
+            "Expected",
+            "Received",
+            "Pending",
+            "Difference",
+          ]}
           data={[
-            ["Mobile Money", "$27,138", "$26,890", "$248", <span key="1" className="text-red-600">-$248</span>],
-            ["Card Payments", "$15,769", "$15,550", "$219", <span key="2" className="text-red-600">-$219</span>],
-            ["Cash", "$2,323", "$2,323", "$0", <span key="3" className="text-emerald-600">$0</span>],
+            [
+              "Mobile Money",
+              "$27,138",
+              "$26,890",
+              "$248",
+              <span key="1" className="text-red-600">
+                -$248
+              </span>,
+            ],
+            [
+              "Card Payments",
+              "$15,769",
+              "$15,550",
+              "$219",
+              <span key="2" className="text-red-600">
+                -$219
+              </span>,
+            ],
+            [
+              "Cash",
+              "$2,323",
+              "$2,323",
+              "$0",
+              <span key="3" className="text-emerald-600">
+                $0
+              </span>,
+            ],
           ]}
         />
         <div className="p-4 border-t border-[var(--border)] bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-700 dark:text-amber-300">⚠️ $467 in pending/missing payments requires follow-up</p>
+          <p className="text-sm text-amber-700 dark:text-amber-300">
+            ⚠️ $467 in pending/missing payments requires follow-up
+          </p>
         </div>
       </div>
 
       {/* Commission Breakdown */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4">
-        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Commission & Fees Breakdown</h3>
+        <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+          Commission & Fees Breakdown
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 bg-[var(--muted)] rounded-lg">
-            <h4 className="text-xs font-medium text-[var(--muted-foreground)] mb-2">Third-Party Platform Costs</h4>
+            <h4 className="text-xs font-medium text-[var(--muted-foreground)] mb-2">
+              Third-Party Platform Costs
+            </h4>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Bolt Food (25% commission)</span>
@@ -1933,7 +2889,9 @@ function FinancialReports() {
             </div>
           </div>
           <div className="p-4 bg-[var(--muted)] rounded-lg">
-            <h4 className="text-xs font-medium text-[var(--muted-foreground)] mb-2">Payment Gateway Fees</h4>
+            <h4 className="text-xs font-medium text-[var(--muted-foreground)] mb-2">
+              Payment Gateway Fees
+            </h4>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Mobile Money (2.5%)</span>
@@ -1975,8 +2933,12 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Reports</h1>
-          <p className="text-[var(--muted-foreground)]">Analyze your business performance</p>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">
+            Reports
+          </h1>
+          <p className="text-[var(--muted-foreground)]">
+            Analyze your business performance
+          </p>
         </div>
         <div className="flex gap-2">
           <button className="px-4 py-2.5 bg-[var(--muted)] text-[var(--foreground)] rounded-lg text-sm font-medium hover:bg-[var(--border)] transition-colors flex items-center gap-2">
@@ -2019,4 +2981,3 @@ export default function ReportsPage() {
     </div>
   );
 }
-

@@ -1,19 +1,106 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "./components/Sidebar";
 import { BranchProvider } from "@/app/providers/BranchProvider";
 import BranchSwitcher from "./components/BranchSwitcher";
+import OnboardingModal from "./components/OnboardingModal";
+import { createClient } from "@/lib/supabase/client";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUserInstitution = async () => {
+      try {
+        const supabase = createClient();
+        
+        // Get current user
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        
+        console.log("Auth check - user:", user, "error:", authError);
+        
+        if (!user) {
+          console.log("No user found, redirecting to login");
+          router.push("/login");
+          return;
+        }
+
+        // Check if user exists in users table and has an institution
+        const { data: userData, error } = await supabase
+          .from("users")
+          .select("id, institution_id")
+          .eq("auth_id", user.id)
+          .maybeSingle();
+
+        console.log("User data from DB:", userData, "error:", error);
+
+        if (error) {
+          console.error("Error fetching user:", error);
+          setIsLoading(false);
+          return;
+        }
+
+        if (!userData) {
+          console.log("No user in DB, creating and showing onboarding");
+          // User doesn't exist in users table, create them
+          const { error: createError } = await supabase
+            .from("users")
+            .insert({
+              auth_id: user.id,
+              email: user.email,
+              role: "owner",
+            });
+
+          if (!createError) {
+            setShowOnboarding(true);
+          } else {
+            console.error("Error creating user:", createError);
+          }
+        } else if (userData.institution_id === null || userData.institution_id === undefined) {
+          console.log("User exists but no institution, showing onboarding");
+          // User exists but has no institution
+          setShowOnboarding(true);
+        } else {
+          console.log("User has institution:", userData.institution_id);
+        }
+      } catch (err) {
+        console.error("Error checking institution:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkUserInstitution();
+  }, [router]);
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    router.refresh();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[var(--muted-foreground)]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <BranchProvider>
+      <OnboardingModal isOpen={showOnboarding} onComplete={handleOnboardingComplete} />
       <div className="min-h-screen bg-[var(--background)]">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         

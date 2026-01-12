@@ -4,10 +4,32 @@ import { useState } from "react";
 import { useBranch } from "@/app/providers/BranchProvider";
 
 export default function BranchSwitcher() {
-  const { currentBranch, branches, switchBranch } = useBranch();
+  const { currentBranch, branches, switchBranch, isLoading } = useBranch();
   const [isOpen, setIsOpen] = useState(false);
 
   const activeBranches = branches.filter((b) => b.status === "active");
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--muted)] text-sm">
+        <div className="w-4 h-4 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+        <span className="text-[var(--muted-foreground)]">Loading...</span>
+      </div>
+    );
+  }
+
+  // Show message if no branches
+  if (!currentBranch || branches.length === 0) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--muted)] text-sm">
+        <svg className="w-4 h-4 text-[var(--muted-foreground)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 21a3 3 0 003-3V9a3 3 0 00-3-3h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0013.172 4H10.828a2 2 0 00-1.414.586L8.293 5.707A1 1 0 017.586 6H6a3 3 0 00-3 3v9a3 3 0 003 3h13.5z" />
+        </svg>
+        <span className="text-[var(--muted-foreground)]">No branches</span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
@@ -44,13 +66,13 @@ export default function BranchSwitcher() {
                     setIsOpen(false);
                   }}
                   className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                    currentBranch.id === branch.id
+                    currentBranch?.id === branch.id
                       ? "bg-[var(--primary)] text-white"
                       : "hover:bg-[var(--muted)] text-[var(--foreground)]"
                   }`}
                 >
                   <div className="font-medium">{branch.name}</div>
-                  <div className={`text-xs mt-0.5 ${currentBranch.id === branch.id ? "text-white/80" : "text-[var(--muted-foreground)]"}`}>
+                  <div className={`text-xs mt-0.5 ${currentBranch?.id === branch.id ? "text-white/80" : "text-[var(--muted-foreground)]"}`}>
                     {branch.address}, {branch.city}
                   </div>
                 </button>
