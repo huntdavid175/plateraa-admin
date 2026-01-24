@@ -66,6 +66,9 @@ type DashboardData = {
   pendingPaymentsTotal: number;
   deliveryAwaiting: number;
   outForDelivery: number;
+  thisWeekRevenue: number;
+  thisMonthRevenue: number;
+  last30DaysRevenue: number;
 };
 
 // Mock data for items we don't have in DB yet
@@ -368,6 +371,9 @@ export default function DashboardPage() {
     pendingPaymentsTotal: 0,
     deliveryAwaiting: 0,
     outForDelivery: 0,
+    thisWeekRevenue: 0,
+    thisMonthRevenue: 0,
+    last30DaysRevenue: 0,
   });
 
   const [currentTime] = useState(
@@ -509,6 +515,45 @@ export default function DashboardPage() {
         (o) => o.status === "dispatched"
       ).length;
 
+      // Calculate time-based revenue
+      const now = new Date();
+      
+      // This week (last 7 days, delivered orders only)
+      const weekAgo = new Date(now);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const thisWeekOrders = orders.filter((o) => {
+        const orderDate = new Date(o.created_at);
+        return orderDate >= weekAgo && o.status === "delivered";
+      });
+      const thisWeekRevenue = thisWeekOrders.reduce(
+        (sum, o) => sum + Number(o.total_amount),
+        0
+      );
+
+      // This month (current calendar month, delivered orders only)
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const thisMonthOrders = orders.filter((o) => {
+        const orderDate = new Date(o.created_at);
+        return orderDate >= monthStart && orderDate <= monthEnd && o.status === "delivered";
+      });
+      const thisMonthRevenue = thisMonthOrders.reduce(
+        (sum, o) => sum + Number(o.total_amount),
+        0
+      );
+
+      // Last 30 days (delivered orders only)
+      const thirtyDaysAgo = new Date(now);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const last30DaysOrders = orders.filter((o) => {
+        const orderDate = new Date(o.created_at);
+        return orderDate >= thirtyDaysAgo && o.status === "delivered";
+      });
+      const last30DaysRevenue = last30DaysOrders.reduce(
+        (sum, o) => sum + Number(o.total_amount),
+        0
+      );
+
       // Fetch top items from order_items
       const { data: orderItems, error: itemsError } = await supabase
         .from("order_items")
@@ -561,6 +606,9 @@ export default function DashboardPage() {
         pendingPaymentsTotal,
         deliveryAwaiting,
         outForDelivery,
+        thisWeekRevenue,
+        thisMonthRevenue,
+        last30DaysRevenue,
       });
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
@@ -927,7 +975,7 @@ export default function DashboardPage() {
                   This Week
                 </span>
                 <span className="font-semibold text-[var(--foreground)]">
-                  ₵{mockData.thisWeekRevenue.toLocaleString()}
+                  ₵{formatCurrency(dashboardData.thisWeekRevenue)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -935,7 +983,7 @@ export default function DashboardPage() {
                   This Month
                 </span>
                 <span className="font-semibold text-[var(--foreground)]">
-                  ₵{mockData.thisMonthRevenue.toLocaleString()}
+                  ₵{formatCurrency(dashboardData.thisMonthRevenue)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -943,7 +991,7 @@ export default function DashboardPage() {
                   Last 30 Days
                 </span>
                 <span className="font-semibold text-[var(--foreground)]">
-                  ₵{mockData.last30DaysRevenue.toLocaleString()}
+                  ₵{formatCurrency(dashboardData.last30DaysRevenue)}
                 </span>
               </div>
             </div>
