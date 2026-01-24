@@ -1914,27 +1914,91 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Stats Summary */}
-      <div className="bg-[var(--muted)] rounded-lg px-4 py-3 flex flex-wrap gap-4 text-sm">
-        <span className="text-[var(--foreground)]">
-          Showing <strong>{filteredOrders.length}</strong> orders
-        </span>
-        <span className="text-[var(--muted-foreground)]">|</span>
-        <span className="text-[var(--foreground)]">
-          Total: <strong>₵{formatCurrency(stats.totalAmount)}</strong>
-        </span>
-        <span className="text-[var(--muted-foreground)]">|</span>
-        <span className="text-[var(--foreground)]">
-          Avg: <strong>₵{formatCurrency(stats.avgAmount)}</strong>
-        </span>
-        <span className="text-[var(--muted-foreground)]">|</span>
-        <span className="text-red-600">Pending: {stats.pending}</span>
-        <span className="text-[var(--muted-foreground)]">|</span>
-        <span className="text-purple-600">Preparing: {stats.preparing}</span>
-        <span className="text-[var(--muted-foreground)]">|</span>
-        <span className="text-emerald-600">Ready: {stats.ready}</span>
-        <span className="text-[var(--muted-foreground)]">|</span>
-        <span className="text-gray-600">Delivered: {stats.delivered}</span>
+      {/* Stats Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Revenue Card */}
+        <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <p className="text-sm text-[var(--muted-foreground)] mb-1">Total Revenue</p>
+              <p className="text-2xl font-bold text-[var(--foreground)]">
+                ₵{formatCurrency(stats.totalAmount)}
+              </p>
+              <p className="text-xs text-[var(--muted-foreground)] mt-2">
+                {filteredOrders.length} orders
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Average Order Value Card */}
+        <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <p className="text-sm text-[var(--muted-foreground)] mb-1">Average Order Value</p>
+              <p className="text-2xl font-bold text-[var(--foreground)]">
+                ₵{formatCurrency(stats.avgAmount)}
+              </p>
+              <p className="text-xs text-[var(--muted-foreground)] mt-2">
+                Per order
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7H7v10h6V7z M17 7h-2v4h2V7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Summary - Pending */}
+        <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <p className="text-sm text-[var(--muted-foreground)] mb-1">Pending Payment</p>
+              <p className="text-2xl font-bold text-red-600">{stats.pending}</p>
+              <p className="text-xs text-[var(--muted-foreground)] mt-2">
+                Awaiting payment
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Summary - Delivered */}
+        <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <p className="text-sm text-[var(--muted-foreground)] mb-1">Completed Today</p>
+              <p className="text-2xl font-bold text-emerald-600">{stats.delivered}</p>
+              <p className="text-xs text-[var(--muted-foreground)] mt-2">
+                Successfully delivered
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Status Bar - Desktop Only */}
+      <div className="hidden lg:flex gap-2 bg-[var(--muted)] rounded-lg px-4 py-3 flex-wrap text-sm">
+        <span className="text-[var(--muted-foreground)]">Quick status:</span>
+        <span className="text-purple-600 font-medium">👨‍🍳 {stats.preparing} Preparing</span>
+        <span className="text-[var(--muted-foreground)]">•</span>
+        <span className="text-cyan-600 font-medium">✅ {stats.ready} Ready</span>
       </div>
 
       {/* Bulk Actions Bar */}
