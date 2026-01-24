@@ -41,15 +41,43 @@ export async function updateSession(request: NextRequest) {
 
   const user = data?.claims;
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Public routes that don't require authentication
+  const publicRoutes = [
+    "/login",
+    "/auth",
+    "/set-password",
+    "/staff/signup",
+    "/api/auth/staff-signup",
+    "/unauthorized",
+  ];
+
+  const isPublicRoute = publicRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  if (!user && !isPublicRoute) {
+    // no user, redirect to login
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
+  }
+
+  // Check role for dashboard access (only owner and manager allowed)
+  if (user && request.nextUrl.pathname.startsWith("/dashboard")) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("auth_id", user.sub)
+      .single();
+
+    const allowedRoles = ["owner", "manager"];
+
+    if (!userData || !allowedRoles.includes(userData.role)) {
+      // User doesn't have permission to access admin dashboard
+      const url = request.nextUrl.clone();
+      url.pathname = "/unauthorized";
+      return NextResponse.redirect(url);
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
