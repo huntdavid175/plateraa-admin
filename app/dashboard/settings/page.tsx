@@ -244,27 +244,73 @@ interface User {
   status: string;
 }
 
+interface Branch {
+  id: string;
+  name: string;
+}
+
+interface InstitutionCode {
+  id: string;
+  code: string;
+  name: string | null;
+  is_active: boolean;
+  uses_count: number;
+  max_uses: number | null;
+  expires_at: string | null;
+  created_at: string;
+}
+
 function UsersPermissions() {
   const [users, setUsers] = useState<User[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [codes, setCodes] = useState<InstitutionCode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editRole, setEditRole] = useState("");
+  const [editBranchId, setEditBranchId] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Code creation state
+  const [showCodeModal, setShowCodeModal] = useState(false);
+  const [newCode, setNewCode] = useState("");
+  const [newCodeName, setNewCodeName] = useState("");
+  const [isCreatingCode, setIsCreatingCode] = useState(false);
 
-  // Fetch users on mount
+  // Fetch users, branches, and codes on mount
   useEffect(() => {
-    async function fetchUsers() {
+    async function fetchData() {
       setIsLoading(true);
       try {
-        const res = await fetch("/api/users");
-        if (res.ok) {
-          const data = await res.json();
+        const [usersRes, branchesRes, codesRes] = await Promise.all([
+          fetch("/api/users"),
+          fetch("/api/branches"),
+          fetch("/api/institution-codes"),
+        ]);
+        
+        if (usersRes.ok) {
+          const data = await usersRes.json();
           setUsers(data.users || []);
         }
+        
+        if (branchesRes.ok) {
+          const data = await branchesRes.json();
+          setBranches(data.branches || []);
+        }
+        
+        if (codesRes.ok) {
+          const data = await codesRes.json();
+          console.log("Fetched codes:", data);
+          setCodes(data.codes || []);
+        } else {
+          console.error("Failed to fetch codes:", await codesRes.text());
+        }
       } catch (err) {
-        console.error("Error fetching users:", err);
+        console.error("Error fetching data:", err);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchUsers();
+    fetchData();
   }, []);
 
   const formatRole = (role: string) => {
@@ -280,23 +326,227 @@ function UsersPermissions() {
     return roleMap[role] || role;
   };
 
+  const roles = [
+    { value: "owner", label: "Owner" },
+    { value: "manager", label: "Manager" },
+    { value: "admin", label: "Admin" },
+    { value: "cashier", label: "Cashier" },
+    { value: "kitchen", label: "Kitchen Staff" },
+    { value: "delivery", label: "Rider" },
+    { value: "accountant", label: "Accountant" },
+  ];
+
+  const handleCreateCode = async () => {
+    if (!newCode.trim()) {
+      alert("Please enter a code");
+      return;
+    }
+    
+    setIsCreatingCode(true);
+    try {
+      const res = await fetch("/api/institution-codes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: newCode,
+          name: newCodeName || null,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setCodes([data.code, ...codes]);
+        setShowCodeModal(false);
+        setNewCode("");
+        setNewCodeName("");
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to create code");
+      }
+    } catch (err) {
+      console.error("Error creating code:", err);
+      alert("Failed to create code");
+    } finally {
+      setIsCreatingCode(false);
+    }
+  };
+
+  const handleDeleteCode = async (codeId: string) => {
+    if (!confirm("Are you sure you want to delete this code?")) return;
+    
+    try {
+      const res = await fetch(`/api/institution-codes/${codeId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setCodes(codes.filter(c => c.id !== codeId));
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to delete code");
+      }
+    } catch (err) {
+      console.error("Error deleting code:", err);
+      alert("Failed to delete code");
+    }
+  };
+
+  const handleToggleCode = async (codeId: string, isActive: boolean) => {
+    try {
+      const res = await fetch(`/api/institution-codes/${codeId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !isActive }),
+      });
+
+      if (res.ok) {
+        setCodes(codes.map(c => 
+          c.id === codeId ? { ...c, is_active: !isActive } : c
+        ));
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to update code");
+      }
+    } catch (err) {
+      console.error("Error updating code:", err);
+    }
+  };
+
+  const openEditModal = (user: User) => {
+    setEditingUser(user);
+    setEditRole(user.role);
+    setEditBranchId(user.branchId || "");
+  };
+
+  const closeEditModal = () => {
+    setEditingUser(null);
+    setEditRole("");
+    setEditBranchId("");
+  };
+
+  const handleSaveUser = async () => {
+    if (!editingUser) return;
+    
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/users/${editingUser.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role: editRole,
+          branchId: editBranchId || null,
+        }),
+      });
+
+      if (res.ok) {
+        // Update local state
+        setUsers(users.map(u => 
+          u.id === editingUser.id 
+            ? { 
+                ...u, 
+                role: editRole, 
+                branchId: editBranchId || null,
+                branchName: branches.find(b => b.id === editBranchId)?.name || null,
+              } 
+            : u
+        ));
+        closeEditModal();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to update user");
+      }
+    } catch (err) {
+      console.error("Error updating user:", err);
+      alert("Failed to update user");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Staff Signup Info */}
-      <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
-        <div className="flex items-start gap-3">
-          <span className="text-2xl">👥</span>
-          <div>
-            <h3 className="font-medium text-emerald-800 dark:text-emerald-200 mb-1">Staff Signup</h3>
-            <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-2">
-              Share your institution code with staff members. They can sign up at:
-            </p>
-            <code className="px-3 py-1.5 bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 rounded text-sm font-mono">
+      {/* Institution Codes */}
+      <Card title="Institution Codes">
+        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-sm text-blue-700 dark:text-blue-300">
+            Share these codes with staff members. They can sign up at{" "}
+            <code className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-800 rounded text-xs font-mono">
               /staff/signup
             </code>
-          </div>
+          </p>
         </div>
-      </div>
+
+        {codes.length === 0 ? (
+          <div className="py-6 text-center text-[var(--muted-foreground)]">
+            <p className="mb-4">No institution codes yet.</p>
+            <button
+              onClick={() => setShowCodeModal(true)}
+              className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:opacity-90"
+            >
+              Create Your First Code
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setShowCodeModal(true)}
+                className="px-4 py-2 bg-[var(--primary)] text-white text-sm rounded-lg hover:opacity-90"
+              >
+                + New Code
+              </button>
+            </div>
+            <div className="space-y-3">
+              {codes.map((code) => (
+                <div 
+                  key={code.id} 
+                  className={`flex items-center justify-between p-4 rounded-lg border ${
+                    code.is_active 
+                      ? "bg-[var(--muted)] border-[var(--border)]" 
+                      : "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 opacity-60"
+                  }`}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <code className="px-3 py-1.5 bg-[var(--background)] border border-[var(--border)] rounded font-mono text-lg font-semibold">
+                        {code.code}
+                      </code>
+                      {!code.is_active && (
+                        <span className="text-xs text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">
+                          Disabled
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-2 flex items-center gap-4 text-xs text-[var(--muted-foreground)]">
+                      {code.name && <span>{code.name}</span>}
+                      <span>Used {code.uses_count} times</span>
+                      {code.max_uses && <span>Max: {code.max_uses}</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleToggleCode(code.id, code.is_active)}
+                      className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                        code.is_active
+                          ? "text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                          : "text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                      }`}
+                    >
+                      {code.is_active ? "Disable" : "Enable"}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCode(code.id)}
+                      className="px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </Card>
 
       <Card title="Team Members">
         {isLoading ? (
@@ -322,12 +572,26 @@ function UsersPermissions() {
                 {users.map((user) => (
                   <tr key={user.id} className="hover:bg-[var(--muted)]">
                     <td className="px-4 py-3 text-sm font-medium text-[var(--foreground)]">{user.name}</td>
-                    <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">{formatRole(user.role)}</td>
-                    <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">{user.email}</td>
-                    <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">{user.branchName || "Not assigned"}</td>
                     <td className="px-4 py-3">
-                      <button className="text-sm text-[var(--primary)] mr-3">Assign Branch</button>
-                      <button className="text-sm text-[var(--primary)]">Edit Role</button>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        user.role === "owner" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" :
+                        user.role === "manager" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" :
+                        "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                      }`}>
+                        {formatRole(user.role)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">{user.email}</td>
+                    <td className="px-4 py-3 text-sm text-[var(--muted-foreground)]">
+                      {user.branchName || <span className="text-amber-600 dark:text-amber-400">Not assigned</span>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button 
+                        onClick={() => openEditModal(user)}
+                        className="text-sm text-[var(--primary)] hover:underline"
+                      >
+                        Edit
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -356,6 +620,136 @@ function UsersPermissions() {
           ))}
         </div>
       </Card>
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--card)] rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6 border-b border-[var(--border)]">
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Edit User</h2>
+              <p className="text-sm text-[var(--muted-foreground)]">{editingUser.name}</p>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              {/* Role Selection */}
+              <div>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Role
+                </label>
+                <select
+                  value={editRole}
+                  onChange={(e) => setEditRole(e.target.value)}
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--background)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                >
+                  {roles.map((role) => (
+                    <option key={role.value} value={role.value}>
+                      {role.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Branch Selection */}
+              <div>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Branch
+                </label>
+                <select
+                  value={editBranchId}
+                  onChange={(e) => setEditBranchId(e.target.value)}
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--background)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                >
+                  <option value="">No branch assigned</option>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-[var(--border)] flex justify-end gap-3">
+              <button
+                onClick={closeEditModal}
+                className="px-4 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--muted)] rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveUser}
+                disabled={isSaving}
+                className="px-4 py-2 text-sm font-medium bg-[var(--primary)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Code Modal */}
+      {showCodeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--card)] rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6 border-b border-[var(--border)]">
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Create Institution Code</h2>
+              <p className="text-sm text-[var(--muted-foreground)]">Create a code for staff to join your institution</p>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Code *
+                </label>
+                <input
+                  type="text"
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+                  placeholder="e.g., PLAT-2024"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--background)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono uppercase"
+                />
+                <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                  Staff will enter this code during signup
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--foreground)] mb-2">
+                  Label (optional)
+                </label>
+                <input
+                  type="text"
+                  value={newCodeName}
+                  onChange={(e) => setNewCodeName(e.target.value)}
+                  placeholder="e.g., Kitchen Staff Code"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--background)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                />
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-[var(--border)] flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowCodeModal(false);
+                  setNewCode("");
+                  setNewCodeName("");
+                }}
+                className="px-4 py-2 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--muted)] rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateCode}
+                disabled={isCreatingCode || !newCode.trim()}
+                className="px-4 py-2 text-sm font-medium bg-[var(--primary)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isCreatingCode ? "Creating..." : "Create Code"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

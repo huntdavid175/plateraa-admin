@@ -9,11 +9,8 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      console.error("Auth error:", authError);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    console.log("Auth user ID:", user.id);
 
     // Get current user's institution_id
     const { data: currentUser, error: currentUserError } = await supabase
@@ -22,11 +19,8 @@ export async function GET() {
       .eq("auth_id", user.id)
       .single();
 
-    console.log("Current user query result:", { currentUser, currentUserError });
-
     if (currentUserError || !currentUser) {
-      console.error("User not found in public.users table for auth_id:", user.id);
-      console.error("Error details:", currentUserError);
+      console.error("User not found:", currentUserError);
       return NextResponse.json({ 
         error: "User profile not found. Please contact support.",
         details: "No matching record in users table for this auth user"
@@ -39,7 +33,8 @@ export async function GET() {
       .select(`
         id,
         auth_id,
-        name,
+        first_name,
+        last_name,
         email,
         phone,
         role,
@@ -59,19 +54,23 @@ export async function GET() {
     }
 
     // Transform data to flatten branch info
-    const transformedUsers = users?.map(user => ({
-      id: user.id,
-      authId: user.auth_id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      branchId: user.branch_id,
-      branchName: user.branches ? (Array.isArray(user.branches) ? user.branches[0]?.name : (user.branches as { name: string })?.name) : null,
-      createdAt: user.created_at,
-      // Determine status based on whether auth_id exists
-      status: user.auth_id ? "active" : "pending",
-    })) || [];
+    const transformedUsers = users?.map(user => {
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ") || "Unknown";
+      return {
+        id: user.id,
+        authId: user.auth_id,
+        name: fullName,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        branchId: user.branch_id,
+        branchName: user.branches ? (Array.isArray(user.branches) ? user.branches[0]?.name : (user.branches as { name: string })?.name) : null,
+        createdAt: user.created_at,
+        status: user.auth_id ? "active" : "pending",
+      };
+    }) || [];
 
     return NextResponse.json({ users: transformedUsers });
   } catch (error) {

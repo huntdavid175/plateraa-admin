@@ -9,11 +9,8 @@ export async function GET() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      console.error("Auth error:", authError);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    console.log("Auth user ID:", user.id);
 
     // Get current user's institution_id
     const { data: currentUser, error: currentUserError } = await supabase
@@ -22,10 +19,8 @@ export async function GET() {
       .eq("auth_id", user.id)
       .single();
 
-    console.log("Current user query result:", { currentUser, currentUserError });
-
     if (currentUserError || !currentUser) {
-      console.error("User not found in public.users table for auth_id:", user.id);
+      console.error("User not found:", currentUserError);
       return NextResponse.json({ 
         error: "User profile not found",
         details: "No matching record in users table"
@@ -35,13 +30,18 @@ export async function GET() {
     // Fetch all branches for the institution
     const { data: branches, error: branchesError } = await supabase
       .from("branches")
-      .select("id, name, address, is_active")
+      .select("id, name, address")
       .eq("institution_id", currentUser.institution_id)
       .order("name");
 
     if (branchesError) {
       console.error("Error fetching branches:", branchesError);
-      return NextResponse.json({ error: "Failed to fetch branches" }, { status: 500 });
+      console.error("Institution ID:", currentUser.institution_id);
+      return NextResponse.json({ 
+        error: "Failed to fetch branches",
+        details: branchesError.message,
+        code: branchesError.code
+      }, { status: 500 });
     }
 
     return NextResponse.json({ branches: branches || [] });
