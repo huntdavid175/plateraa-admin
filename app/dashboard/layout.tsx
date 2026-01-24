@@ -104,8 +104,8 @@ export default function DashboardLayout({
       <div className="min-h-screen bg-[var(--background)]">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         
-        {/* Mobile header */}
-        <div className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-[var(--card)] border-b border-[var(--border)]">
+        {/* Mobile/Tablet header */}
+        <div className="xl:hidden fixed top-0 left-0 right-0 z-20 bg-[var(--card)] border-b border-[var(--border)]">
           <div className="h-16 flex items-center justify-between px-4">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -137,7 +137,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Desktop header with branch switcher */}
-        <div className="hidden lg:block fixed top-0 left-64 right-0 h-16 bg-[var(--card)] border-b border-[var(--border)] z-10">
+        <div className="hidden xl:block fixed top-0 left-64 right-0 h-16 bg-[var(--card)] border-b border-[var(--border)] z-10">
           <div className="h-full flex items-center justify-between px-6">
             <div className="flex items-center gap-4">
               <BranchSwitcher />
@@ -149,7 +149,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Main content */}
-        <main className="lg:ml-64 min-h-screen pt-24 lg:pt-16">
+        <main className="xl:ml-64 min-h-screen pt-24 xl:pt-16">
           {children}
         </main>
       </div>

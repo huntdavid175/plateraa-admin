@@ -1373,7 +1373,7 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [channelFilter, setChannelFilter] = useState("All");
   const [paymentFilter, setPaymentFilter] = useState("All");
-  const [dateFilter, setDateFilter] = useState("Today");
+  const [dateFilter, setDateFilter] = useState("All Time");
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showActionsMenu, setShowActionsMenu] = useState<string | null>(null);
@@ -1611,7 +1611,29 @@ export default function OrdersPage() {
       channelFilter === "All" || order.channel === channelFilter;
     const matchesPayment =
       paymentFilter === "All" || order.paymentMethod === paymentFilter;
-    return matchesSearch && matchesStatus && matchesChannel && matchesPayment;
+    
+    // Date filtering
+    let matchesDate = true;
+    const orderDate = order.createdAt;
+    const now = new Date();
+    
+    if (dateFilter === "Today") {
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      matchesDate = orderDate >= todayStart;
+    } else if (dateFilter === "Yesterday") {
+      const yesterdayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      matchesDate = orderDate >= yesterdayStart && orderDate < todayStart;
+    } else if (dateFilter === "Last 7 days") {
+      const weekAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+      matchesDate = orderDate >= weekAgo;
+    } else if (dateFilter === "Last 30 days") {
+      const monthAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+      matchesDate = orderDate >= monthAgo;
+    }
+    // "All" or "Custom" shows everything (Custom would need date pickers to be implemented)
+    
+    return matchesSearch && matchesStatus && matchesChannel && matchesPayment && matchesDate;
   });
 
   // Calculate stats
@@ -1657,7 +1679,7 @@ export default function OrdersPage() {
     setStatusFilter("All");
     setChannelFilter("All");
     setPaymentFilter("All");
-    setDateFilter("Today");
+    setDateFilter("All Time");
   };
 
   const maskPhone = (phone: string) => {
@@ -1766,11 +1788,11 @@ export default function OrdersPage() {
             onChange={(e) => setDateFilter(e.target.value)}
             className="px-4 py-2.5 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
           >
-            <option value="Today">📅 Today</option>
+            <option value="All Time">📅 All Time</option>
+            <option value="Today">Today</option>
             <option value="Yesterday">Yesterday</option>
             <option value="Last 7 days">Last 7 days</option>
             <option value="Last 30 days">Last 30 days</option>
-            <option value="Custom">Custom range</option>
           </select>
 
           {/* Status Filter */}

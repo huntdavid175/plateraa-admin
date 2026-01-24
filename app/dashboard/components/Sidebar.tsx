@@ -83,17 +83,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile/tablet */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-30 xl:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen w-64 bg-[var(--sidebar-bg)] border-r border-[var(--border)] flex flex-col transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed left-0 top-0 z-40 h-screen w-64 bg-[var(--sidebar-bg)] border-r border-[var(--border)] flex flex-col transition-transform duration-300 xl:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -115,7 +115,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden p-1 rounded-lg hover:bg-[var(--muted)] text-[var(--muted-foreground)]"
+            className="xl:hidden p-1 rounded-lg hover:bg-[var(--muted)] text-[var(--muted-foreground)]"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
