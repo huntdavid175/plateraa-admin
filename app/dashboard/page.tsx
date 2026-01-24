@@ -69,6 +69,7 @@ type DashboardData = {
   thisWeekRevenue: number;
   thisMonthRevenue: number;
   last30DaysRevenue: number;
+  dailyRevenue: { day: string; amount: number }[];
 };
 
 // Mock data for items we don't have in DB yet
@@ -77,23 +78,6 @@ const mockData = {
   vsYesterday: 12.5,
   vsLastWeek: 8.3,
   thisWeekVsLast: 15.2,
-  thisWeekRevenue: 45680.0,
-  thisMonthRevenue: 156240.0,
-  last30DaysRevenue: 189500.0,
-  peakHours: [
-    { hour: "9 AM", orders: 5 },
-    { hour: "10 AM", orders: 8 },
-    { hour: "11 AM", orders: 15 },
-    { hour: "12 PM", orders: 28 },
-    { hour: "1 PM", orders: 32 },
-    { hour: "2 PM", orders: 24 },
-    { hour: "3 PM", orders: 12 },
-    { hour: "4 PM", orders: 8 },
-    { hour: "5 PM", orders: 14 },
-    { hour: "6 PM", orders: 22 },
-    { hour: "7 PM", orders: 35 },
-    { hour: "8 PM", orders: 30 },
-  ],
   failedPayments: { count: 8, lostRevenue: 1240 },
   paymentSuccessRate: 92.5,
   avgTimeToPayment: 4.2,
@@ -112,15 +96,20 @@ const mockData = {
   ],
 };
 
-// Daily revenue data for chart (last 7 days) - mock for now
-const dailyRevenue = [
-  { day: "Mon", amount: 8500 },
-  { day: "Tue", amount: 9200 },
-  { day: "Wed", amount: 7800 },
-  { day: "Thu", amount: 10500 },
-  { day: "Fri", amount: 12100 },
-  { day: "Sat", amount: 14200 },
-  { day: "Sun", amount: 12450 },
+// Peak hours data - mock for now (will be replaced with real data in future)
+const peakHours = [
+  { hour: "9 AM", orders: 5 },
+  { hour: "10 AM", orders: 8 },
+  { hour: "11 AM", orders: 15 },
+  { hour: "12 PM", orders: 28 },
+  { hour: "1 PM", orders: 32 },
+  { hour: "2 PM", orders: 24 },
+  { hour: "3 PM", orders: 12 },
+  { hour: "4 PM", orders: 8 },
+  { hour: "5 PM", orders: 14 },
+  { hour: "6 PM", orders: 22 },
+  { hour: "7 PM", orders: 35 },
+  { hour: "8 PM", orders: 30 },
 ];
 
 function MetricCard({
@@ -374,6 +363,7 @@ export default function DashboardPage() {
     thisWeekRevenue: 0,
     thisMonthRevenue: 0,
     last30DaysRevenue: 0,
+    dailyRevenue: [],
   });
 
   const [currentTime] = useState(
@@ -386,7 +376,7 @@ export default function DashboardPage() {
   const [revenueActiveIndex, setRevenueActiveIndex] = useState<number | null>(
     null
   );
-  const maxOrders = Math.max(...mockData.peakHours.map((h) => h.orders));
+  const maxOrders = Math.max(...peakHours.map((h) => h.orders));
 
   const fetchDashboardData = useCallback(async () => {
     if (!currentBranch) return;
@@ -554,6 +544,46 @@ export default function DashboardPage() {
         0
       );
 
+      // Calculate daily revenue for last 7 days
+      const last7DaysRevenue: Record<string, number> = {};
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      
+      // Initialize all 7 days with 0
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        const dayName = dayNames[date.getDay()];
+        last7DaysRevenue[dayName] = 0;
+      }
+      
+      // Calculate revenue for each day
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+        const dayEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+        
+        const dayRevenue = orders
+          .filter(
+            (o) =>
+              o.status === "delivered" &&
+              new Date(o.created_at) >= dayStart &&
+              new Date(o.created_at) <= dayEnd
+          )
+          .reduce((sum, o) => sum + Number(o.total_amount), 0);
+        
+        const dayName = dayNames[date.getDay()];
+        last7DaysRevenue[dayName] = dayRevenue;
+      }
+      
+      // Convert to array format for chart
+      const dailyRevenueData = dayNames
+        .map((day) => ({
+          day,
+          amount: last7DaysRevenue[day] || 0,
+        }))
+        .slice(-7);
+
       // Fetch top items from order_items
       const { data: orderItems, error: itemsError } = await supabase
         .from("order_items")
@@ -609,6 +639,7 @@ export default function DashboardPage() {
         thisWeekRevenue,
         thisMonthRevenue,
         last30DaysRevenue,
+        dailyRevenue: dailyRevenueData,
       });
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
@@ -722,7 +753,7 @@ export default function DashboardPage() {
   }));
 
   // Transform peakHours data for the chart
-  const chartData = mockData.peakHours.map((h) => ({
+  const chartData = peakHours.map((h) => ({
     hour: h.hour,
     orders: h.orders,
   }));
@@ -740,7 +771,7 @@ export default function DashboardPage() {
   }, [activeIndex, chartData]);
 
   // Revenue overview bar chart data and config
-  const revenueChartData = dailyRevenue.map((d) => ({
+  const revenueChartData = dashboardData.dailyRevenue.map((d) => ({
     day: d.day,
     revenue: d.amount,
   }));
@@ -1491,7 +1522,7 @@ export default function DashboardPage() {
             </ChartContainer>
             <p className="text-xs text-[var(--muted-foreground)] mt-4">
               Busiest:{" "}
-              {mockData.peakHours.find((h) => h.orders === maxOrders)?.hour} (
+              {peakHours.find((h) => h.orders === maxOrders)?.hour} (
               {maxOrders} orders)
             </p>
           </div>
