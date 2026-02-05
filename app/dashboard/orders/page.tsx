@@ -1633,18 +1633,39 @@ export default function OrdersPage() {
     }
     // "All" or "Custom" shows everything (Custom would need date pickers to be implemented)
     
-    return matchesSearch && matchesStatus && matchesChannel && matchesPayment && matchesDate;
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesChannel &&
+      matchesPayment &&
+      matchesDate
+    );
   });
 
   // Calculate stats
+  const paidStatus = ["paid", "delivered", "completed"];
+  const unpaidStatus = ["pending"];
+
   const stats = {
     total: filteredOrders.length,
+    // Total order value: all orders (any status)
     totalAmount: filteredOrders.reduce((sum, o) => sum + o.amount, 0),
+    // Total revenue: only paid / completed orders
+    totalRevenue: filteredOrders
+      .filter((o) => paidStatus.includes(o.rawStatus))
+      .reduce((sum, o) => sum + o.amount, 0),
     avgAmount:
       filteredOrders.length > 0
         ? filteredOrders.reduce((sum, o) => sum + o.amount, 0) /
           filteredOrders.length
         : 0,
+    // Unpaid orders (count and value) for clarity
+    unpaidCount: filteredOrders.filter((o) =>
+      unpaidStatus.includes(o.rawStatus)
+    ).length,
+    unpaidAmount: filteredOrders
+      .filter((o) => unpaidStatus.includes(o.rawStatus))
+      .reduce((sum, o) => sum + o.amount, 0),
     pending: filteredOrders.filter((o) => o.status === "Pending").length,
     preparing: filteredOrders.filter((o) => o.status === "Preparing").length,
     ready: filteredOrders.filter((o) => o.status === "Ready").length,
@@ -1916,16 +1937,23 @@ export default function OrdersPage() {
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Revenue Card */}
+        {/* Total Revenue (Paid Orders) Card */}
         <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <p className="text-sm text-[var(--muted-foreground)] mb-1">Total Revenue</p>
+              <p className="text-sm text-[var(--muted-foreground)] mb-1">
+                Total Revenue (Paid)
+              </p>
               <p className="text-2xl font-bold text-[var(--foreground)]">
-                ₵{formatCurrency(stats.totalAmount)}
+                ₵{formatCurrency(stats.totalRevenue)}
               </p>
               <p className="text-xs text-[var(--muted-foreground)] mt-2">
-                {filteredOrders.length} orders
+                {
+                  filteredOrders.filter((o) =>
+                    ["paid", "delivered", "completed"].includes(o.rawStatus)
+                  ).length
+                }{" "}
+                paid orders
               </p>
             </div>
             <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
@@ -1936,16 +1964,18 @@ export default function OrdersPage() {
           </div>
         </div>
 
-        {/* Average Order Value Card */}
+        {/* Total Order Value Card */}
         <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <p className="text-sm text-[var(--muted-foreground)] mb-1">Average Order Value</p>
+              <p className="text-sm text-[var(--muted-foreground)] mb-1">
+                Total Order Value
+              </p>
               <p className="text-2xl font-bold text-[var(--foreground)]">
-                ₵{formatCurrency(stats.avgAmount)}
+                ₵{formatCurrency(stats.totalAmount)}
               </p>
               <p className="text-xs text-[var(--muted-foreground)] mt-2">
-                Per order
+                {filteredOrders.length} orders
               </p>
             </div>
             <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
@@ -1956,14 +1986,18 @@ export default function OrdersPage() {
           </div>
         </div>
 
-        {/* Status Summary - Pending */}
+        {/* Unpaid Orders (Pending Payment) */}
         <div className="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <p className="text-sm text-[var(--muted-foreground)] mb-1">Pending Payment</p>
-              <p className="text-2xl font-bold text-red-600">{stats.pending}</p>
+              <p className="text-sm text-[var(--muted-foreground)] mb-1">
+                Unpaid Orders
+              </p>
+              <p className="text-2xl font-bold text-red-600">
+                {stats.unpaidCount}
+              </p>
               <p className="text-xs text-[var(--muted-foreground)] mt-2">
-                Awaiting payment
+                ₵{formatCurrency(stats.unpaidAmount)} awaiting payment
               </p>
             </div>
             <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600">

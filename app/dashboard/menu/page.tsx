@@ -140,6 +140,7 @@ function ItemModal({
   editItem?: MenuItem | null;
 }) {
   const [imagePreview, setImagePreview] = useState<string | null>(editItem?.image || null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [name, setName] = useState(editItem?.name || "");
   const [description, setDescription] = useState(editItem?.description || "");
   const [price, setPrice] = useState(editItem?.price || 0);
@@ -159,6 +160,7 @@ function ItemModal({
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -221,6 +223,29 @@ function ItemModal({
       const selectedCategory = dbCategories.find(c => c.name === categoryName);
       if (!selectedCategory) throw new Error("Category not found");
 
+      // Upload image to Supabase Storage (if a new file was selected)
+      let imageUrl: string | null = editItem?.image || null;
+
+      if (imageFile) {
+        const fileExt = imageFile.name.split(".").pop() || "jpg";
+        const fileName = `${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2)}.${fileExt}`;
+        const filePath = `${userData.institution_id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("menu-images")
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabase.storage
+          .from("menu-images")
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+
       const itemData = {
         institution_id: userData.institution_id,
         category_id: selectedCategory.id,
@@ -232,7 +257,7 @@ function ItemModal({
         is_featured: isFeatured,
         is_unlimited_stock: unlimitedStock,
         stock_quantity: unlimitedStock ? null : stockQuantity,
-        image_url: imagePreview,
+        image_url: imageUrl,
       };
 
       let itemId: string;
@@ -471,7 +496,11 @@ function ItemModal({
                       <input
                         type="text"
                         value={option.name}
-                        readOnly
+                        onChange={(e) => {
+                          const updated = [...options];
+                          updated[index] = { ...updated[index], name: e.target.value };
+                          setOptions(updated);
+                        }}
                         className="px-3 py-1.5 bg-[var(--card)] border border-[var(--border)] rounded text-sm"
                         placeholder="Option name"
                       />
@@ -480,7 +509,14 @@ function ItemModal({
                         <input
                           type="number"
                           value={option.price}
-                          readOnly
+                          onChange={(e) => {
+                            const updated = [...options];
+                            updated[index] = {
+                              ...updated[index],
+                              price: Number(e.target.value) || 0,
+                            };
+                            setOptions(updated);
+                          }}
                           className="flex-1 px-3 py-1.5 bg-[var(--card)] border border-[var(--border)] rounded text-sm"
                           placeholder="Price"
                         />
@@ -546,7 +582,11 @@ function ItemModal({
                       <input
                         type="text"
                         value={addon.name}
-                        readOnly
+                        onChange={(e) => {
+                          const updated = [...addons];
+                          updated[index] = { ...updated[index], name: e.target.value };
+                          setAddons(updated);
+                        }}
                         className="px-3 py-1.5 bg-[var(--card)] border border-[var(--border)] rounded text-sm"
                         placeholder="Add-on name"
                       />
@@ -555,7 +595,14 @@ function ItemModal({
                         <input
                           type="number"
                           value={addon.price}
-                          readOnly
+                          onChange={(e) => {
+                            const updated = [...addons];
+                            updated[index] = {
+                              ...updated[index],
+                              price: Number(e.target.value) || 0,
+                            };
+                            setAddons(updated);
+                          }}
                           className="flex-1 px-3 py-1.5 bg-[var(--card)] border border-[var(--border)] rounded text-sm"
                           placeholder="Additional price"
                         />

@@ -417,15 +417,19 @@ export default function DashboardPage() {
 
       const orders: Order[] = allOrders || [];
 
+      // Helper to determine which orders count as "revenue" (paid/realized)
+      const isRevenueOrder = (status: string) =>
+        status === "paid" || status === "delivered" || status === "completed";
+
       // Filter today's orders
       const todaysOrders = orders.filter((order) => {
         const orderDate = new Date(order.created_at);
         return orderDate >= todayStart && orderDate <= todayEnd;
       });
 
-      // Calculate today's revenue (only delivered orders)
+      // Calculate today's revenue (paid/completed orders)
       const todayRevenue = todaysOrders
-        .filter((o) => o.status === "delivered")
+        .filter((o) => isRevenueOrder(o.status))
         .reduce((sum, o) => sum + Number(o.total_amount), 0);
 
       // Count orders by status
@@ -439,20 +443,22 @@ export default function DashboardPage() {
         cancelled: todaysOrders.filter((o) => o.status === "cancelled").length,
       };
 
-      // Calculate average order value
-      const completedOrders = todaysOrders.filter(
-        (o) => o.status === "delivered" || o.status === "completed"
+      // Calculate average order value (based on paid/completed orders)
+      const revenueOrders = todaysOrders.filter((o) =>
+        isRevenueOrder(o.status)
       );
       const avgOrderValue =
-        completedOrders.length > 0
-          ? completedOrders.reduce((sum, o) => sum + Number(o.total_amount), 0) /
-            completedOrders.length
+        revenueOrders.length > 0
+          ? revenueOrders.reduce(
+              (sum, o) => sum + Number(o.total_amount),
+              0
+            ) / revenueOrders.length
           : 0;
 
-      // Revenue by channel
+      // Revenue by channel (paid/completed orders)
       const channelRevenue: Record<string, number> = {};
       todaysOrders.forEach((order) => {
-        if (order.status === "delivered") {
+        if (isRevenueOrder(order.status)) {
           channelRevenue[order.channel] =
             (channelRevenue[order.channel] || 0) + Number(order.total_amount);
         }
@@ -473,10 +479,10 @@ export default function DashboardPage() {
         }))
         .sort((a, b) => b.amount - a.amount);
 
-      // Revenue by payment method
+      // Revenue by payment method (paid/completed orders)
       const paymentRevenue: Record<string, number> = {};
       todaysOrders.forEach((order) => {
-        if (order.status === "delivered" && order.payment_method) {
+        if (isRevenueOrder(order.status) && order.payment_method) {
           paymentRevenue[order.payment_method] =
             (paymentRevenue[order.payment_method] || 0) +
             Number(order.total_amount);
@@ -520,36 +526,40 @@ export default function DashboardPage() {
       // Calculate time-based revenue
       const now = new Date();
       
-      // This week (last 7 days, delivered orders only)
+      // This week (last 7 days, paid/completed orders only)
       const weekAgo = new Date(now);
       weekAgo.setDate(weekAgo.getDate() - 7);
       const thisWeekOrders = orders.filter((o) => {
         const orderDate = new Date(o.created_at);
-        return orderDate >= weekAgo && o.status === "delivered";
+        return orderDate >= weekAgo && isRevenueOrder(o.status);
       });
       const thisWeekRevenue = thisWeekOrders.reduce(
         (sum, o) => sum + Number(o.total_amount),
         0
       );
 
-      // This month (current calendar month, delivered orders only)
+      // This month (current calendar month, paid/completed orders only)
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       const thisMonthOrders = orders.filter((o) => {
         const orderDate = new Date(o.created_at);
-        return orderDate >= monthStart && orderDate <= monthEnd && o.status === "delivered";
+        return (
+          orderDate >= monthStart &&
+          orderDate <= monthEnd &&
+          isRevenueOrder(o.status)
+        );
       });
       const thisMonthRevenue = thisMonthOrders.reduce(
         (sum, o) => sum + Number(o.total_amount),
         0
       );
 
-      // Last 30 days (delivered orders only)
+      // Last 30 days (paid/completed orders only)
       const thirtyDaysAgo = new Date(now);
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const last30DaysOrders = orders.filter((o) => {
         const orderDate = new Date(o.created_at);
-        return orderDate >= thirtyDaysAgo && o.status === "delivered";
+        return orderDate >= thirtyDaysAgo && isRevenueOrder(o.status);
       });
       const last30DaysRevenue = last30DaysOrders.reduce(
         (sum, o) => sum + Number(o.total_amount),
@@ -568,9 +578,9 @@ export default function DashboardPage() {
         dailyRevenueMap[dateKey] = 0;
       }
       
-      // Sum revenue by day (delivered orders only)
+      // Sum revenue by day (paid/completed orders only)
       orders.forEach((order) => {
-        if (order.status === "delivered") {
+        if (isRevenueOrder(order.status)) {
           const orderDate = new Date(order.created_at);
           const dateKey = orderDate.toISOString().split("T")[0];
           if (dailyRevenueMap.hasOwnProperty(dateKey)) {
