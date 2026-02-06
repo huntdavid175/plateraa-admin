@@ -58,6 +58,7 @@ type Order = {
   amount: number;
   status: string;
   rawStatus: string; // Database status value (pending, paid, etc.)
+  paymentStatus: string | null;
   items: OrderItem[];
   subtotal: number;
   delivery: number;
@@ -413,12 +414,12 @@ function OrderDetailsModal({
                 </span>
                 <span
                   className={`text-sm font-medium ${
-                    order.paidAt || ["paid", "preparing", "ready", "dispatched", "delivered"].includes(order.rawStatus)
+                    order.paymentStatus === "paid"
                       ? "text-emerald-600"
                       : "text-amber-600"
                   }`}
                 >
-                  {order.paidAt || ["paid", "preparing", "ready", "dispatched", "delivered"].includes(order.rawStatus)
+                  {order.paymentStatus === "paid"
                     ? "✅ Confirmed"
                     : "⏳ Pending"}
                 </span>
@@ -1523,6 +1524,7 @@ export default function OrdersPage() {
             amount: Number(order.total_amount),
             status: formatStatus(order.status),
             rawStatus: order.status,
+            paymentStatus: order.payment_status ?? null,
             items,
             subtotal: Number(order.subtotal),
             delivery: Number(order.delivery_fee),
@@ -1563,6 +1565,8 @@ export default function OrdersPage() {
         // Set timestamp fields based on status
         if (newStatus === "paid") {
           updateData.paid_at = new Date().toISOString();
+          // Also reflect payment in payment_status column
+          updateData.payment_status = "paid";
         } else if (newStatus === "ready") {
           updateData.ready_at = new Date().toISOString();
         } else if (newStatus === "dispatched") {
@@ -1643,28 +1647,27 @@ export default function OrdersPage() {
   });
 
   // Calculate stats
-  const paidStatus = ["paid", "delivered", "completed"];
-  const unpaidStatus = ["pending"];
+  const paidPaymentStatus = ["paid"];
 
   const stats = {
     total: filteredOrders.length,
     // Total order value: all orders (any status)
     totalAmount: filteredOrders.reduce((sum, o) => sum + o.amount, 0),
-    // Total revenue: only paid / completed orders
+    // Total revenue: only orders with payment_status = paid
     totalRevenue: filteredOrders
-      .filter((o) => paidStatus.includes(o.rawStatus))
+      .filter((o) => paidPaymentStatus.includes(o.paymentStatus ?? ""))
       .reduce((sum, o) => sum + o.amount, 0),
     avgAmount:
       filteredOrders.length > 0
         ? filteredOrders.reduce((sum, o) => sum + o.amount, 0) /
           filteredOrders.length
         : 0,
-    // Unpaid orders (count and value) for clarity
-    unpaidCount: filteredOrders.filter((o) =>
-      unpaidStatus.includes(o.rawStatus)
+    // Unpaid orders (count and value) for clarity, based on payment_status
+    unpaidCount: filteredOrders.filter(
+      (o) => (o.paymentStatus ?? "pending") !== "paid"
     ).length,
     unpaidAmount: filteredOrders
-      .filter((o) => unpaidStatus.includes(o.rawStatus))
+      .filter((o) => (o.paymentStatus ?? "pending") !== "paid")
       .reduce((sum, o) => sum + o.amount, 0),
     pending: filteredOrders.filter((o) => o.status === "Pending").length,
     preparing: filteredOrders.filter((o) => o.status === "Preparing").length,
@@ -2046,9 +2049,6 @@ export default function OrdersPage() {
               Mark as Paid
             </button>
             <button className="px-3 py-1.5 bg-white/20 rounded text-sm hover:bg-white/30 transition-colors">
-              Send to Kitchen
-            </button>
-            <button className="px-3 py-1.5 bg-white/20 rounded text-sm hover:bg-white/30 transition-colors">
               Export
             </button>
             <button className="px-3 py-1.5 bg-white/20 rounded text-sm hover:bg-white/30 transition-colors">
@@ -2241,16 +2241,6 @@ export default function OrdersPage() {
                                 className="w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 ✅ Mark as Paid
-                              </button>
-                              <button
-                                onClick={() => {
-                                  updateOrderStatus(order.dbId, "preparing");
-                                  setShowActionsMenu(null);
-                                }}
-                                disabled={order.rawStatus !== "paid"}
-                                className="w-full px-4 py-2 text-left text-sm text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                🍳 Send to Kitchen
                               </button>
                               <button
                                 onClick={() => {
